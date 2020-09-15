@@ -49,7 +49,7 @@ AunWorldCharacter::AunWorldCharacter()
 	AbilitySystemComponent->SetIsReplicated(true);
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
-	InventoryComponent->SetIsReplicated(true);
+	//InventoryComponent->SetIsReplicated(true);
 
 	AttributeSet = CreateDefaultSubobject<UCoreAttributeSet>(TEXT("AttributeSet"));
 	

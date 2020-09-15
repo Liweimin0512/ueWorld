@@ -18,10 +18,13 @@ public:
 	// Sets default values for this component's properties
 	UInventoryComponent();
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory)
+	int32 AmountofSlots;
+
 	/** Map of all items owned by this player, from definition to data */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory)
-	//TArray<FInventoryItem> InventoryData;
-	TMap<int32, FInventoryItem> InventoryData;
+	TArray<FInventoryItem> InventoryData;
+	//TMap<int32, FInventoryItem> InventoryMapData;
 
 	/** Map of slot, from type/num to item, initialized from ItemSlotsPerType on RPGGameInstanceBase */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory)
@@ -29,6 +32,12 @@ public:
 
 public:
 	
+	UFUNCTION(BlueprintCallable, Category = Inventory)
+	bool IsSlotEmpty(int32 SlotIndex);
+
+	UFUNCTION(BlueprintCallable, Category = Inventory)
+	void GetItemByIndex(bool& bEmpty, UItemDataAsset*& ItemData, int32& Amount, int32 index);
+
 	//UFUNCTION(BlueprintCallable, Category = Inventory)
 	//void GetInventoryItems(TArray<FInventoryItem>& items);
 
@@ -106,4 +115,3 @@ public:
 
 		
 };
-

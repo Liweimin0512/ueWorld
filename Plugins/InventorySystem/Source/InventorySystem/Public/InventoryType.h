@@ -126,10 +126,10 @@ struct INVENTORYSYSTEM_API FInventoryItem
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Item)
-	UItemDataAsset* ID;
+	UItemDataAsset* ItemID;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Item)
-	int32 ItemCount;
+	int32 ItemAmount;
 };
 
 
