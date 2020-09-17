@@ -23,8 +23,8 @@ class AunWorldCharacter : public ACharacter,public IAbilitySystemInterface
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UInventoryComponent* InventoryComponent;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	//class UInventoryComponent* InventoryComponent;
 
 public:
 	AunWorldCharacter();

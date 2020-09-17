@@ -171,7 +171,7 @@ void UInventoryComponent::NotifyInventoryItemChanged(bool bAdded, UItemDataAsset
 	OnInventoryItemChanged.Broadcast(bAdded, Item);
 
 	// Call BP update event
-	InventoryItemChanged(bAdded, Item);
+	//InventoryItemChanged(bAdded, Item);
 }
 
 void UInventoryComponent::NotifySlottedItemChanged(FItemSlot ItemSlot, UItemDataAsset* Item)
@@ -179,7 +179,7 @@ void UInventoryComponent::NotifySlottedItemChanged(FItemSlot ItemSlot, UItemData
 	OnSlottedItemChangedNative.Broadcast(ItemSlot, Item);
 	OnSlottedItemChanged.Broadcast(ItemSlot, Item);
 
-	SlottedItemChanged(ItemSlot, Item);
+	//SlottedItemChanged(ItemSlot, Item);
 }
 
 //bool UInventoryComponent::GetInventoryItemData(UItemDataAsset* Item, FItemData& ItemData) const
