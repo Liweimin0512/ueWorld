@@ -36,6 +36,15 @@ public:
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UCoreAttributeSet, MaxHealth)
 
+	UPROPERTY(BlueprintReadOnly, Category = "San", ReplicatedUsing = OnRep_San)
+	FGameplayAttributeData San;
+	ATTRIBUTE_ACCESSORS(UCoreAttributeSet, San)
+
+	UPROPERTY(BlueprintReadOnly, Category = "San", ReplicatedUsing = OnRep_MaxSan)
+	FGameplayAttributeData MaxSan;
+	ATTRIBUTE_ACCESSORS(UCoreAttributeSet, MaxSan)
+
+
 protected:
 	void AdjustAttributeFormMaxChange(FGameplayAttributeData& AffectedAttribute, const FGameplayAttributeData& MaxAttribute,
 		float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty);
@@ -45,5 +54,11 @@ protected:
 	
 	UFUNCTION()
 	virtual void OnRep_MaxHealth();
+
+	UFUNCTION()
+	virtual void OnRep_San();
+
+	UFUNCTION()
+	virtual void OnRep_MaxSan();
 
 };

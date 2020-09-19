@@ -30,6 +30,14 @@ void UCoreAttributeSet::OnRep_MaxHealth() {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UCoreAttributeSet, MaxHealth);
 }
 
+void UCoreAttributeSet::OnRep_San() {
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UCoreAttributeSet, San);
+}
+
+void UCoreAttributeSet::OnRep_MaxSan() {
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UCoreAttributeSet, MaxSan);
+}
+
 void UCoreAttributeSet::AdjustAttributeFormMaxChange(FGameplayAttributeData& AffectedAttribute, \
 	const FGameplayAttributeData& MaxAttribute, float NewMaxValue, 
 	const FGameplayAttribute& AffectedAttributeProperty) 
