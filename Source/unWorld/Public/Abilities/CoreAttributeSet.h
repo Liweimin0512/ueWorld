@@ -44,6 +44,10 @@ public:
 	FGameplayAttributeData MaxSan;
 	ATTRIBUTE_ACCESSORS(UCoreAttributeSet, MaxSan)
 
+		UPROPERTY(BlueprintReadOnly, Category = "Attack", ReplicatedUsing = OnRep_Attack)
+		FGameplayAttributeData Attack;
+	ATTRIBUTE_ACCESSORS(UCoreAttributeSet, Attack)
+
 
 protected:
 	void AdjustAttributeFormMaxChange(FGameplayAttributeData& AffectedAttribute, const FGameplayAttributeData& MaxAttribute,
@@ -60,5 +64,8 @@ protected:
 
 	UFUNCTION()
 	virtual void OnRep_MaxSan();
+
+	UFUNCTION()
+	virtual void OnRep_Attack();
 
 };

@@ -11,7 +11,8 @@ UCoreAttributeSet::UCoreAttributeSet():
 	Health(1.f),
 	MaxHealth(1.f),
 	San(1.f),
-	MaxSan(1.f)
+	MaxSan(1.f),
+	Attack(1.f)
 {
 }
 
@@ -24,6 +25,7 @@ void UCoreAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(UCoreAttributeSet, MaxHealth);
 	DOREPLIFETIME(UCoreAttributeSet, San);
 	DOREPLIFETIME(UCoreAttributeSet, MaxSan);
+	DOREPLIFETIME(UCoreAttributeSet, Attack);
 
 }
 
@@ -41,6 +43,10 @@ void UCoreAttributeSet::OnRep_San() {
 
 void UCoreAttributeSet::OnRep_MaxSan() {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UCoreAttributeSet, MaxSan);
+}
+
+void UCoreAttributeSet::OnRep_Attack() {
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UCoreAttributeSet, Attack);
 }
 
 void UCoreAttributeSet::AdjustAttributeFormMaxChange(FGameplayAttributeData& AffectedAttribute, \
