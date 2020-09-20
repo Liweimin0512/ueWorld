@@ -9,7 +9,9 @@
 
 UCoreAttributeSet::UCoreAttributeSet():
 	Health(1.f),
-	MaxHealth(1.f)
+	MaxHealth(1.f),
+	San(1.f),
+	MaxSan(1.f)
 {
 }
 
@@ -20,6 +22,9 @@ void UCoreAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 
 	DOREPLIFETIME(UCoreAttributeSet, Health);
 	DOREPLIFETIME(UCoreAttributeSet, MaxHealth);
+	DOREPLIFETIME(UCoreAttributeSet, San);
+	DOREPLIFETIME(UCoreAttributeSet, MaxSan);
+
 }
 
 void UCoreAttributeSet::OnRep_Health() {
