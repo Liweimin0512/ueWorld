@@ -54,6 +54,10 @@ public:
 	//UFUNCTION(BlueprintImplementableEvent)
 	//void RefreshSlottedGameplayAbilities();
 
+		/** Returns a list of active abilities matching the specified tags. This only returns if the ability is currently running */
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	void GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbilityBase*>& ActiveAbilities);
+
 protected:
 
 	UPROPERTY(EditAnywhere,Replicated,Category = Abilities)
@@ -118,5 +122,15 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	/**
+	 * Attempts to activate all abilities that match the specified tags
+	 * Returns true if it thinks it activated, but it may return false positives due to failure later in activation.
+	 * If bAllowRemoteActivation is true, it will remotely activate local/server abilities, if false it will only try to locally activate the ability
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	bool ActivateAbilitiesWithTags(FGameplayTagContainer AbilityTags, bool bAllowRemoteActivation = true);
+
+
 };
 

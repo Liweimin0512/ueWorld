@@ -233,6 +233,14 @@ bool AunWorldCharacter::ActivateAbilitiesWithItemSlot(TSubclassOf<UGameplayAbili
 	return false;
 }
 
+void AunWorldCharacter::GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbilityBase*>& ActiveAbilities)
+{
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->GetActiveAbilitiesWithTags(AbilityTags, ActiveAbilities);
+	}
+}
+
 //void AunWorldCharacter::RefreshSlottedGameplayAbilities() {
 //	if (bAbilitiesInitialized)
 //	{
@@ -298,3 +306,13 @@ bool AunWorldCharacter::ActivateAbilitiesWithItemSlot(TSubclassOf<UGameplayAbili
 //		}
 //	}
 //}
+
+bool AunWorldCharacter::ActivateAbilitiesWithTags(FGameplayTagContainer AbilityTags, bool bAllowRemoteActivation)
+{
+	if (AbilitySystemComponent)
+	{
+		return AbilitySystemComponent->TryActivateAbilitiesByTag(AbilityTags, bAllowRemoteActivation);
+	}
+
+	return false;
+}
