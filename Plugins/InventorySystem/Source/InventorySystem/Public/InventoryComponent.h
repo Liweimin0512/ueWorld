@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "InventoryType.h"
+//#include "AbilitySystemComponent.h"
 #include "InventoryComponent.generated.h"
 
 class UItemDataAsset;
@@ -55,59 +56,30 @@ public:
 	/** Native version above, called before BP delegate */
 	FOnSlottedItemChangedNative OnSlottedItemChangedNative;
 
-	//UFUNCTION(BlueprintImplementableEvent, Category = Inventory)
-	//void InventoryItemChanged(bool bAdded,UItemDataAsset* item);
-
-	///** Called after an item was equipped and we notified all delegates */
-	//UFUNCTION(BlueprintImplementableEvent, Category = Inventory)
-	//void SlottedItemChanged(FItemSlot ItemSlot, UItemDataAsset* Item);
-
-	///** Adds a new inventory item, will add it to an empty slot if possible. If the item supports count you can add more than one count. It will also update the level when adding if required */
-	//UFUNCTION(BlueprintCallable, Category = Inventory)
-	//bool AddInventoryItem(UItemDataAsset* NewItem, int32 ItemCount = 1, int32 ItemLevel = 1, bool bAutoSlot = true);
-
-	///** Remove an inventory item, will also remove from slots. A remove count of <= 0 means to remove all copies */
-	//UFUNCTION(BlueprintCallable, Category = Inventory)
-	//bool RemoveInventoryItem(UItemDataAsset* RemovedItem, int32 RemoveCount = 1);
-
-	///** Returns all inventory items of a given type. If none is passed as type it will return all */
-	//UFUNCTION(BlueprintCallable, Category = Inventory)
-	//void GetInventoryItems(TArray<UItemDataAsset*>& Items, FPrimaryAssetType ItemType);
-
-	///** Returns number of instances of this item found in the inventory. This uses count from GetItemData */
-	//UFUNCTION(BlueprintPure, Category = Inventory)
-	//int32 GetInventoryItemCount(UItemDataAsset* Item) const;
-
-	///** Returns the item data associated with an item. Returns false if none found */
-	//UFUNCTION(BlueprintPure, Category = Inventory)
-	//bool GetInventoryItemData(UItemDataAsset* Item, FItemData& ItemData) const;
-
-	///** Sets slot to item, will remove from other slots if necessary. If passing null this will empty the slot */
-	//UFUNCTION(BlueprintCallable, Category = Inventory)
-	//bool SetSlottedItem(FItemSlot ItemSlot , UItemDataAsset* Item);
-
-	///** Returns item in slot, or null if empty */
-	//UFUNCTION(BlueprintPure, Category = Inventory)
-	//UItemDataAsset* GetSlottedItem(FItemSlot ItemSlot) const;
-
-	///** Returns all slotted items of a given type. If none is passed as type it will return all */
-	//UFUNCTION(BlueprintCallable, Category = Inventory)
-	//void GetSlottedItems(TArray<UItemDataAsset*>& Items, FPrimaryAssetType ItemType, bool bOutputEmptyIndexes);
-
-	///** Fills in any empty slots with items in inventory */
-	//UFUNCTION(BlueprintCallable, Category = Inventory)
-	//void FillEmptySlots();
-
-
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	//UPROPERTY()
+	//UAbilitySystemComponent* AbilitySystemComponent;
 
 	//bool FillEmptySlotWithItem(UItemDataAsset* NewItem);
 
 	/** Calls the inventory update callbacks */
 	void NotifyInventoryItemChanged(bool bAdded, UItemDataAsset* Item);
 	void NotifySlottedItemChanged(FItemSlot ItemSlot,UItemDataAsset* item);
+
+	/** Map of slot to ability granted by that slot. I may refactor this later */
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory)
+	//TMap<FItemSlot, FGameplayAbilitySpecHandle> SlottedAbilities;
+
+	/** Called when slotted items change, bound to delegate on interface */
+	void OnItemSlotChanged(FItemSlot ItemSlot, UItemDataAsset* Item);
+	void RefreshSlottedGameplayAbilities();
+	/** Remove slotted gameplay abilities, if force is false it only removes invalid ones */
+	void RemoveSlottedGameplayAbilities(bool bRemoveAll);
+	/** Adds slotted item abilities if needed */
+	void AddSlottedGameplayAbilities();
 
 public:	
 	// Called every frame

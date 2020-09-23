@@ -233,6 +233,11 @@ bool AunWorldCharacter::ActivateAbilitiesWithItemSlot(TSubclassOf<UGameplayAbili
 	return false;
 }
 
+int32 AunWorldCharacter::GetCharacterLevel()
+{
+	return 1;
+}
+
 void AunWorldCharacter::GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbilityBase*>& ActiveAbilities)
 {
 	if (AbilitySystemComponent)

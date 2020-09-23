@@ -54,7 +54,10 @@ public:
 	//UFUNCTION(BlueprintImplementableEvent)
 	//void RefreshSlottedGameplayAbilities();
 
-		/** Returns a list of active abilities matching the specified tags. This only returns if the ability is currently running */
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	int32 GetCharacterLevel();
+	
+	/** Returns a list of active abilities matching the specified tags. This only returns if the ability is currently running */
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 	void GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbilityBase*>& ActiveAbilities);
 
