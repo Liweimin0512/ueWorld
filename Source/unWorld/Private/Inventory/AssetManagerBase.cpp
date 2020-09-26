@@ -1,9 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AssetManagerBase.h"
-#include "ItemDataAsset.h"
-//#include "AbilitySystemGlobals.h"
+#include "Inventory/AssetManagerBase.h"
 
 const FPrimaryAssetType	UAssetManagerBase::WeaponItemType = TEXT("Weapon");
 

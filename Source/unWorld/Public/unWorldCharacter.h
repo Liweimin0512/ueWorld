@@ -9,6 +9,7 @@
 #include "Abilities/GameplayAbilityBase.h"
 #include "Abilities/CoreAttributeSet.h"
 #include "Inventory/InventorySystemComponent.h"
+#include "Inventory/InventoryType.h"
 #include "unWorldCharacter.generated.h"
 
 UCLASS(config = Game)
@@ -37,9 +38,6 @@ public:
 #pragma endregion Attribut
 
 #pragma region Abilities
-
-	UFUNCTION(BlueprintCallable, Category = "Abilities")
-		bool ActivateAbilitiesWithItemSlot(TSubclassOf<UGameplayAbility> ItemAbility, bool bAllowRemoteActivation);
 
 	//UFUNCTION(BlueprintImplementableEvent)
 	//void RefreshSlottedGameplayAbilities();

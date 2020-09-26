@@ -12,7 +12,7 @@
  * Item类数据资源基类
  */
 UCLASS(Abstract, BlueprintType)
-class INVENTORYSYSTEM_API UItemDataAsset : public UPrimaryDataAsset
+class UNWORLD_API UItemDataAsset : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 

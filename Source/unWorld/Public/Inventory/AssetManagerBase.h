@@ -2,8 +2,9 @@
 
 #pragma once
 
-#include "InventorySystem.h"
 #include "Engine/AssetManager.h"
+#include "Inventory/ItemDataAsset.h"
+//#include "AbilitySystemGlobals.h"
 #include "AssetManagerBase.generated.h"
 
 class UItemDataAsset;
@@ -14,7 +15,7 @@ class UItemDataAsset;
  * This is used by setting AssetManagerClassName in DefaultEngine.ini
  */
 UCLASS()
-class INVENTORYSYSTEM_API UAssetManagerBase : public UAssetManager
+class UNWORLD_API UAssetManagerBase : public UAssetManager
 {
 	GENERATED_BODY()
 	

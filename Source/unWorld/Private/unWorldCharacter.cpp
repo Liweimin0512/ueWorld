@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "..\Public\unWorldCharacter.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AunWorldCharacter
@@ -135,21 +136,6 @@ void AunWorldCharacter::HandleHealthChanged(float DeltaValue, const struct FGame
 	}
 }
 
-
-
-
-bool AunWorldCharacter::ActivateAbilitiesWithItemSlot(TSubclassOf<UGameplayAbility> ItemAbility,bool bAllowRemoteActivation) {
-	
-	FGameplayAbilitySpecHandle FoundHandle = AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(ItemAbility, CharacterLevel, INDEX_NONE, this));
-	
-	if ( &FoundHandle && AbilitySystemComponent)
-	{
-		return AbilitySystemComponent->TryActivateAbility(FoundHandle, bAllowRemoteActivation);
-	}
-
-	return false;
-}
-
 int32 AunWorldCharacter::GetCharacterLevel()
 {
 	return 1;
@@ -161,6 +147,11 @@ void AunWorldCharacter::GetActiveAbilitiesWithTags(FGameplayTagContainer Ability
 	{
 		AbilitySystemComponent->GetActiveAbilitiesWithTags(AbilityTags, ActiveAbilities);
 	}
+}
+
+bool AunWorldCharacter::ActivateAbilitiesWithItemSlot(FItemSlot ItemSlot, bool bAllowRemoteActivation)
+{
+	return false;
 }
 
 //void AunWorldCharacter::RefreshSlottedGameplayAbilities() {

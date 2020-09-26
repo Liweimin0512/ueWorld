@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class INVENTORYSYSTEM_API UWeaponItemData : public UItemDataAsset
+class UNWORLD_API UWeaponItemData : public UItemDataAsset
 {
 	GENERATED_BODY()
 
