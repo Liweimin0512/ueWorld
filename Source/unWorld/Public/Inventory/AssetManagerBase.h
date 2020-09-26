@@ -3,8 +3,6 @@
 #pragma once
 
 #include "Engine/AssetManager.h"
-#include "Inventory/ItemDataAsset.h"
-//#include "AbilitySystemGlobals.h"
 #include "AssetManagerBase.generated.h"
 
 class UItemDataAsset;

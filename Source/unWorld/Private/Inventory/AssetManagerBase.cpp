@@ -2,6 +2,8 @@
 
 
 #include "Inventory/AssetManagerBase.h"
+#include "Inventory/ItemDataAsset.h"
+//#include "AbilitySystemGlobals.h"
 
 const FPrimaryAssetType	UAssetManagerBase::WeaponItemType = TEXT("Weapon");
 
