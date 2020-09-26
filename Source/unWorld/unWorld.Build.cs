@@ -22,7 +22,6 @@ public class unWorld : ModuleRules
 			"GameplayAbilities",
 			"GameplayTags",
 			"GameplayTasks"
-			// "InventoryComponent"
 			//"SimplexNoise"
 		});
 		PrivateIncludePaths.AddRange(new string[]

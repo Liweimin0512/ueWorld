@@ -2,7 +2,7 @@
 
 
 #include "Abilities/RPGAbilitySystemComponent.h"
-#include "unWorld\Public/unWorldCharacter.h"
+#include "unWorld\Public\unWorldCharacter.h"
 #include "AbilitySystemGlobals.h"
 
 URPGAbilitySystemComponent::URPGAbilitySystemComponent() {}
