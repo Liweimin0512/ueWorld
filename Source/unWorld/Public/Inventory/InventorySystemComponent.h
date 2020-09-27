@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "ItemDataAsset.h"
+#include "InventoryType.h"
 #include "InventorySystemComponent.generated.h"
 
 
@@ -16,13 +18,29 @@ public:
 	// Sets default values for this component's properties
 	UInventorySystemComponent();
 
-protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	/** Map of all items owned by this player, from definition to data */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory)
+		TMap<UItemDataAsset*, FItemData> InventoryData;
+
+	/** Map of slot, from type/num to item, initialized from ItemSlotsPerType on RPGGameInstanceBase */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory)
+		TMap<FItemSlot, UItemDataAsset*> SlottedItems;
 
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+	// Implement IRPGInventoryInterface
+	virtual const TMap<UItemDataAsset*, FItemData>& GetInventoryDataMap() const
+	{
+		return InventoryData;
+	}
+	virtual const TMap<FItemSlot, UItemDataAsset*>& GetSlottedItemMap() const
+	{
+		return SlottedItems;
+	}
+
 };

@@ -8,7 +8,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "..\Public\unWorldCharacter.h"
+#include "Inventory/ItemDataAsset.h"
+#include "Inventory/InventorySystemComponent.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AunWorldCharacter
@@ -19,8 +20,8 @@ AunWorldCharacter::AunWorldCharacter()
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
 	// set our turn rates for input
-	BaseTurnRate = 45.f;
-	BaseLookUpRate = 45.f;
+	//BaseTurnRate = 45.f;
+	//BaseLookUpRate = 45.f;
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
@@ -34,23 +35,24 @@ AunWorldCharacter::AunWorldCharacter()
 	GetCharacterMovement()->AirControl = 0.2f;
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
-	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+	//CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	//CameraBoom->SetupAttachment(RootComponent);
+	//CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
+	//CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
-	// Create a follow camera
-	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+	//// Create a follow camera
+	//FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	//FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+	//FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 	AbilitySystemComponent = CreateDefaultSubobject<URPGAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
 
-	//InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
-	//InventoryComponent->SetIsReplicated(true);
+
+	InventoryComponent = CreateDefaultSubobject<UInventorySystemComponent>(TEXT("InventoryComponent"));
+	InventoryComponent->SetIsReplicated(true);
 
 	AttributeSet = CreateDefaultSubobject<UCoreAttributeSet>(TEXT("AttributeSet"));
 	
@@ -151,6 +153,13 @@ void AunWorldCharacter::GetActiveAbilitiesWithTags(FGameplayTagContainer Ability
 
 bool AunWorldCharacter::ActivateAbilitiesWithItemSlot(FItemSlot ItemSlot, bool bAllowRemoteActivation)
 {
+	FGameplayAbilitySpecHandle* FoundHandle = SlottedAbilities.Find(ItemSlot);
+
+	if (FoundHandle && AbilitySystemComponent)
+	{
+		return AbilitySystemComponent->TryActivateAbility(*FoundHandle, bAllowRemoteActivation);
+	}
+
 	return false;
 }
 
@@ -165,7 +174,7 @@ bool AunWorldCharacter::ActivateAbilitiesWithItemSlot(FItemSlot ItemSlot, bool b
 //
 //void AunWorldCharacter::RemoveSlottedGameplayAbilities(bool bRemoveAll)
 //{
-//	TMap<FRPGItemSlot, FGameplayAbilitySpec> SlottedAbilitySpecs;
+//	TMap<FItemSlot, FGameplayAbilitySpec> SlottedAbilitySpecs;
 //
 //	if (!bRemoveAll)
 //	{
@@ -173,7 +182,7 @@ bool AunWorldCharacter::ActivateAbilitiesWithItemSlot(FItemSlot ItemSlot, bool b
 //		FillSlottedAbilitySpecs(SlottedAbilitySpecs);
 //	}
 //
-//	for (TPair<FRPGItemSlot, FGameplayAbilitySpecHandle>& ExistingPair : SlottedAbilities)
+//	for (TPair<FItemSlot, FGameplayAbilitySpecHandle>& ExistingPair : SlottedAbilities)
 //	{
 //		FGameplayAbilitySpec* FoundSpec = AbilitySystemComponent->FindAbilitySpecFromHandle(ExistingPair.Value);
 //		bool bShouldRemove = bRemoveAll || !FoundSpec;
@@ -205,11 +214,11 @@ bool AunWorldCharacter::ActivateAbilitiesWithItemSlot(FItemSlot ItemSlot, bool b
 
 //void AunWorldCharacter::AddSlottedGameplayAbilities()
 //{
-//	TMap<FRPGItemSlot, FGameplayAbilitySpec> SlottedAbilitySpecs;
+//	TMap<FItemSlot, FGameplayAbilitySpec> SlottedAbilitySpecs;
 //	FillSlottedAbilitySpecs(SlottedAbilitySpecs);
 //
 //	// Now add abilities if needed
-//	for (const TPair<FRPGItemSlot, FGameplayAbilitySpec>& SpecPair : SlottedAbilitySpecs)
+//	for (const TPair<FItemSlot, FGameplayAbilitySpec>& SpecPair : SlottedAbilitySpecs)
 //	{
 //		FGameplayAbilitySpecHandle& SpecHandle = SlottedAbilities.FindOrAdd(SpecPair.Key);
 //
@@ -228,4 +237,59 @@ bool AunWorldCharacter::ActivateAbilitiesWithTags(FGameplayTagContainer AbilityT
 	}
 
 	return false;
+}
+
+void AunWorldCharacter::AddSlottedGameplayAbilities()
+{
+	TMap<FItemSlot, FGameplayAbilitySpec> SlottedAbilitySpecs;
+	FillSlottedAbilitySpecs(SlottedAbilitySpecs);
+
+	// Now add abilities if needed
+	for (const TPair<FItemSlot, FGameplayAbilitySpec>& SpecPair : SlottedAbilitySpecs)
+	{
+		FGameplayAbilitySpecHandle& SpecHandle = SlottedAbilities.FindOrAdd(SpecPair.Key);
+
+		if (!SpecHandle.IsValid())
+		{
+			SpecHandle = AbilitySystemComponent->GiveAbility(SpecPair.Value);
+		}
+	}
+}
+
+void AunWorldCharacter::FillSlottedAbilitySpecs(TMap<FItemSlot, FGameplayAbilitySpec>& SlottedAbilitySpecs)
+{
+	// First add default ones
+	for (const TPair<FItemSlot, TSubclassOf<UGameplayAbilityBase>>& DefaultPair : DefaultSlottedAbilities)
+	{
+		if (DefaultPair.Value.Get())
+		{
+			SlottedAbilitySpecs.Add(DefaultPair.Key, FGameplayAbilitySpec(DefaultPair.Value, GetCharacterLevel(), INDEX_NONE, this));
+		}
+	}
+
+	// Now potentially override with inventory
+	if (InventoryComponent)
+	{
+		const TMap<FItemSlot, UItemDataAsset*>& SlottedItemMap = InventoryComponent->GetSlottedItemMap();
+
+		for (const TPair<FItemSlot, UItemDataAsset*>& ItemPair : SlottedItemMap)
+		{
+			UItemDataAsset* SlottedItem = ItemPair.Value;
+
+			// Use the character level as default
+			int32 AbilityLevel = GetCharacterLevel();
+
+			if (SlottedItem && SlottedItem->ItemType.GetName() == FName(TEXT("Weapon")))
+			{
+				// Override the ability level to use the data from the slotted item
+				AbilityLevel = SlottedItem->AbilityLevel;
+			}
+
+			if (SlottedItem && SlottedItem->GrantedAbility)
+			{
+				// This will override anything from default
+				SlottedAbilitySpecs.Add(ItemPair.Key, FGameplayAbilitySpec(SlottedItem->GrantedAbility, AbilityLevel, INDEX_NONE, SlottedItem));
+			}
+		}
+	}
 }

@@ -61,25 +61,25 @@ public:
 
 
 
-	/** Camera boom positioning the camera behind the character */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-		class USpringArmComponent* CameraBoom;
+	///** Camera boom positioning the camera behind the character */
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	//	class USpringArmComponent* CameraBoom;
 
-	/** Follow camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-		class UCameraComponent* FollowCamera;
+	///** Follow camera */
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	//	class UCameraComponent* FollowCamera;
 
 
 public:
 
 
-	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
-		float BaseTurnRate;
+	///** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	//	float BaseTurnRate;
 
-	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
-		float BaseLookUpRate;
+	///** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	//	float BaseLookUpRate;
 
 
 
@@ -90,6 +90,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Abilities)
 		TArray<TSubclassOf<UGameplayAbilityBase>> GameplayAbilities;
+
+	/** Map of item slot to gameplay ability class, these are bound before any abilities added by the inventory */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Abilities)
+		TMap<FItemSlot, TSubclassOf<UGameplayAbilityBase>> DefaultSlottedAbilities;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Abilities)
 		TArray<TSubclassOf<UGameplayEffect>> PassiveGameplayEffects;
@@ -110,8 +114,9 @@ protected:
 	UPROPERTY()
 		int32 bAbilitiesInitialized;
 
+	/** Map of slot to ability granted by that slot. I may refactor this later */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory)
-		FGameplayAbilitySpecHandle WeaponAbility;
+		TMap<FItemSlot, FGameplayAbilitySpecHandle> SlottedAbilities;
 
 
 #pragma region AttributeChange
@@ -131,10 +136,10 @@ protected:
 	/** Apply the startup gameplay abilities and effects */
 	void AddStartupGameplayAbilities();
 
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	///** Returns CameraBoom subobject **/
+	//FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	///** Returns FollowCamera subobject **/
+	//FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	/**
 	 * Attempts to activate all abilities that match the specified tags
@@ -143,6 +148,12 @@ protected:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 		bool ActivateAbilitiesWithTags(FGameplayTagContainer AbilityTags, bool bAllowRemoteActivation = true);
+
+	/** Adds slotted item abilities if needed */
+	void AddSlottedGameplayAbilities();
+
+	/** Fills in with ability specs, based on defaults and inventory */
+	void FillSlottedAbilitySpecs(TMap<FItemSlot, FGameplayAbilitySpec>& SlottedAbilitySpecs);
 
 	// Called from CoreAttributeSet, these call BP events above
 	virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);

@@ -57,7 +57,7 @@ struct UNWORLD_API FItemSlot
 	}
 };
 
-///** Extra information about a URPGItem that is in a player's inventory */
+///** Extra information about a UItemDataAsset that is in a player's inventory */
 USTRUCT(BlueprintType)
 struct UNWORLD_API FItemData
 {

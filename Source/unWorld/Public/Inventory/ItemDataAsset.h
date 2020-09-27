@@ -6,6 +6,7 @@
 #include "Engine/DataAsset.h"
 //#include "Styling/SlateBrush.h"
 #include "AssetManagerBase.h"
+#include "Abilities/GameplayAbilityBase.h"
 #include "ItemDataAsset.generated.h"
 
 /**
@@ -56,8 +57,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Max)
     int32 MaxLevel;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Abilities)
-    FName AbilityName;
+	/** Ability to grant if this item is slotted */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Abilities)
+		TSubclassOf<UGameplayAbilityBase> GrantedAbility;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Abilities)
     int32 AbilityLevel;
