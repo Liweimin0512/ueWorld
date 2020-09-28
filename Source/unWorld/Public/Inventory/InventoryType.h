@@ -126,7 +126,7 @@ struct UNWORLD_API FInventoryItem
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Item)
-	UItemDataAsset* ItemID;
+	UItemDataAsset* ItemAsset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Item)
 	int32 ItemAmount;

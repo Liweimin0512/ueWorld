@@ -10,6 +10,8 @@ UInventorySystemComponent::UInventorySystemComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
+
+
 }
 
 
@@ -19,7 +21,8 @@ void UInventorySystemComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+	AmountOfInventory = 40;
+	InventoryData.SetNumUninitialized(AmountOfInventory);
 }
 
 
@@ -29,5 +32,39 @@ void UInventorySystemComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+const TArray<FInventoryItem>& UInventorySystemComponent::GetInventoryDataMap() const
+{
+	// TODO: insert return statement here
+	return InventoryData;
+}
+
+const TMap<FItemSlot, UItemDataAsset*>& UInventorySystemComponent::GetSlottedItemMap() const
+{
+	// TODO: insert return statement here
+	return SlottedItems;
+}
+
+bool UInventorySystemComponent::IsInventoryEmpty(int32 SlotIndex) const
+{
+	FInventoryItem SlotData = 	InventoryData[SlotIndex];
+	return !IsValid(SlotData.ItemAsset);	
+}
+
+void UInventorySystemComponent::GetItemByIndex(int32 index, bool& bEmpty, UItemDataAsset*& item, int32& Amount) const
+{
+	if (IsInventoryEmpty(index))
+	{
+		bEmpty = true;
+		item = nullptr;
+		Amount = 0;
+	}
+	else
+	{
+		bEmpty = false;
+		item = InventoryData[index].ItemAsset;
+		Amount = InventoryData[index].ItemAmount;
+	}
 }
 

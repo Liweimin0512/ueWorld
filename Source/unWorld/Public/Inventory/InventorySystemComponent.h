@@ -9,7 +9,7 @@
 #include "InventorySystemComponent.generated.h"
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable ,ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UNWORLD_API UInventorySystemComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -23,24 +23,24 @@ public:
 
 	/** Map of all items owned by this player, from definition to data */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory)
-		TMap<UItemDataAsset*, FItemData> InventoryData;
+		TArray<FInventoryItem> InventoryData;
 
 	/** Map of slot, from type/num to item, initialized from ItemSlotsPerType on RPGGameInstanceBase */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory)
 		TMap<FItemSlot, UItemDataAsset*> SlottedItems;
 
-public:	
+	const TArray<FInventoryItem>& GetInventoryDataMap() const;
+	const TMap<FItemSlot, UItemDataAsset*>& GetSlottedItemMap() const;
+
+protected:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	// Implement IRPGInventoryInterface
-	virtual const TMap<UItemDataAsset*, FItemData>& GetInventoryDataMap() const
-	{
-		return InventoryData;
-	}
-	virtual const TMap<FItemSlot, UItemDataAsset*>& GetSlottedItemMap() const
-	{
-		return SlottedItems;
-	}
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Inventory)
+	int32 AmountOfInventory;
 
+	UFUNCTION(BlueprintCallable, Category = Inventory)
+	bool IsInventoryEmpty(int32 SlotIndex) const;
+	UFUNCTION(BlueprintCallable, Category = Inventory)
+	void GetItemByIndex(int32 index, bool& bEmpty, UItemDataAsset*& item,int32& Amount) const;
 };
