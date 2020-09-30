@@ -140,3 +140,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnInventoryItemChangedNative, bool, UItemD
 /** Delegate called when the contents of an inventory slot change */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSlottedItemChanged, FItemSlot, ItemSlot, UItemDataAsset*, Item);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnSlottedItemChangedNative, FItemSlot, UItemDataAsset*);
+
+/** Delegate called when the entire inventory has been loaded, all items may have been replaced */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryLoaded);
+DECLARE_MULTICAST_DELEGATE(FOnInventoryLoadedNative);

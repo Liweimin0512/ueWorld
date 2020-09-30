@@ -26,12 +26,39 @@ void UInventorySystemComponent::BeginPlay()
 }
 
 
+bool UInventorySystemComponent::SaveInventory()
+{
+	return false;
+}
+
+bool UInventorySystemComponent::LoadInventory()
+{
+	return false;
+}
+
 // Called every frame
 void UInventorySystemComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+bool UInventorySystemComponent::FillEmptySlotWithItem(FInventoryItem NewItem)
+{
+	return false;
+}
+
+void UInventorySystemComponent::NotifyInventoryItemChanged(bool bAdded, UItemDataAsset* Item)
+{
+}
+
+void UInventorySystemComponent::NotifySlottedItemChanged(FItemSlot ItemSlot, UItemDataAsset* Item)
+{
+}
+
+void UInventorySystemComponent::NotifyInventoryLoaded()
+{
 }
 
 const TArray<FInventoryItem>& UInventorySystemComponent::GetInventoryDataMap() const
@@ -66,5 +93,16 @@ void UInventorySystemComponent::GetItemByIndex(int32 index, bool& bEmpty, UItemD
 		item = InventoryData[index].ItemAsset;
 		Amount = InventoryData[index].ItemAmount;
 	}
+}
+
+UItemDataAsset* UInventorySystemComponent::GetSlottedItem(FItemSlot ItemSlot) const
+{
+	UItemDataAsset* const* FoundItem = SlottedItems.Find(ItemSlot);
+
+	if (FoundItem)
+	{
+		return *FoundItem;
+	}
+	return nullptr;
 }
 
