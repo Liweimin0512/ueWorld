@@ -95,6 +95,45 @@ void UInventorySystemComponent::GetItemByIndex(int32 index, bool& bEmpty, UItemD
 	}
 }
 
+int32 UInventorySystemComponent::GetInventoryItemCount(int32 index) const
+{
+	FInventoryItem foundItem = InventoryData[index];
+	if (IsValid(foundItem.ItemAsset)) {
+		return foundItem.ItemAmount;
+	}
+	return int32();
+}
+
+bool UInventorySystemComponent::SetSlottedItem(FItemSlot ItemSlot, UItemDataAsset* Item)
+{
+	// Iterate entire inventory because we need to remove from old slot
+	bool bFound = false;
+	for (TPair<FItemSlot, UItemDataAsset*>& Pair : SlottedItems)
+	{
+		if (Pair.Key == ItemSlot)
+		{
+			// Add to new slot
+			bFound = true;
+			Pair.Value = Item;
+			NotifySlottedItemChanged(Pair.Key, Pair.Value);
+		}
+		else if (Item != nullptr && Pair.Value == Item)
+		{
+			// If this item was found in another slot, remove it
+			Pair.Value = nullptr;
+			NotifySlottedItemChanged(Pair.Key, Pair.Value);
+		}
+	}
+
+	if (bFound)
+	{
+		SaveInventory();
+		return true;
+	}
+
+	return false;
+}
+
 UItemDataAsset* UInventorySystemComponent::GetSlottedItem(FItemSlot ItemSlot) const
 {
 	UItemDataAsset* const* FoundItem = SlottedItems.Find(ItemSlot);
@@ -106,3 +145,30 @@ UItemDataAsset* UInventorySystemComponent::GetSlottedItem(FItemSlot ItemSlot) co
 	return nullptr;
 }
 
+
+void UInventorySystemComponent::NotifyInventoryItemChanged(bool bAdded, UItemDataAsset* Item)
+{
+	// Notify native before blueprint
+	OnInventoryItemChangedNative.Broadcast(bAdded, Item);
+	OnInventoryItemChanged.Broadcast(bAdded, Item);
+
+	// Call BP update event
+	InventoryItemChanged(bAdded, Item);
+}
+
+void UInventorySystemComponent::NotifySlottedItemChanged(FItemSlot ItemSlot, UItemDataAsset* Item)
+{
+	// Notify native before blueprint
+	OnSlottedItemChangedNative.Broadcast(ItemSlot, Item);
+	OnSlottedItemChanged.Broadcast(ItemSlot, Item);
+
+	// Call BP update event
+	SlottedItemChanged(ItemSlot, Item);
+}
+
+void UInventorySystemComponent::NotifyInventoryLoaded()
+{
+	// Notify native before blueprint
+	OnInventoryLoadedNative.Broadcast();
+	OnInventoryLoaded.Broadcast();
+}

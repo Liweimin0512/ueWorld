@@ -62,15 +62,19 @@ public:
 
 	/** Called after an item was equipped and we notified all delegates */
 	UFUNCTION(BlueprintImplementableEvent, Category = Inventory)
-	void SlottedItemChanged(FItemSlot ItemSlot, FInventoryItem Item);
+	void SlottedItemChanged(FItemSlot ItemSlot, UItemDataAsset* Item);
 
 
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 		bool IsInventoryEmpty(int32 SlotIndex) const;
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 		void GetItemByIndex(int32 index, bool& bEmpty, UItemDataAsset*& item, int32& Amount) const;
+	UFUNCTION(BlueprintCallable, Category = Inventory)
+		int32 GetInventoryItemCount(int32 index) const;
 
-
+	/** Sets slot to item, will remove from other slots if necessary. If passing null this will empty the slot */
+	UFUNCTION(BlueprintCallable, Category = Inventory)
+		bool SetSlottedItem(FItemSlot ItemSlot, UItemDataAsset* Item);
 
 	/** Returns item in slot, or null if empty */
 	UFUNCTION(BlueprintPure, Category = Inventory)
