@@ -49,18 +49,6 @@ bool UInventorySystemComponent::FillEmptySlotWithItem(FInventoryItem NewItem)
 	return false;
 }
 
-void UInventorySystemComponent::NotifyInventoryItemChanged(bool bAdded, UItemDataAsset* Item)
-{
-}
-
-void UInventorySystemComponent::NotifySlottedItemChanged(FItemSlot ItemSlot, UItemDataAsset* Item)
-{
-}
-
-void UInventorySystemComponent::NotifyInventoryLoaded()
-{
-}
-
 const TArray<FInventoryItem>& UInventorySystemComponent::GetInventoryDataMap() const
 {
 	// TODO: insert return statement here
