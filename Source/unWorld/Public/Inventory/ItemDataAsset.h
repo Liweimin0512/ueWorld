@@ -39,6 +39,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
     UTexture2D* ItemIcon; 
 
+    // Æ·ÖÊ
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
     int32 Price;
 
