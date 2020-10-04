@@ -36,6 +36,21 @@ bool UInventorySystemComponent::LoadInventory()
 	return false;
 }
 
+void UInventorySystemComponent::SearchEmptyInventorySlot(bool& bSuccess, int32& SlotIndex)
+{
+	for (const FInventoryItem& foundItem : InventoryData)
+	{
+		if (!IsValid(foundItem.ItemAsset))
+		{
+			
+		}
+	}
+}
+
+void UInventorySystemComponent::AddItem(FInventoryItem NewItem, int32 ItemAmound, bool& bSuccess, int32& Reset)
+{
+}
+
 // Called every frame
 void UInventorySystemComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
