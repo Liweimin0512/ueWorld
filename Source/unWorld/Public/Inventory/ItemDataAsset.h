@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-//#include "Styling/SlateBrush.h"
+#include "Styling/SlateBrush.h"
 #include "AssetManagerBase.h"
 #include "Abilities/GameplayAbilityBase.h"
 #include "ItemDataAsset.generated.h"
@@ -36,8 +36,8 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
     FText ItemDescription;
 
-    //UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
-    //FSlateBrush ItemIcon; 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
+    UTexture2D* ItemIcon; 
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
     int32 Price;
