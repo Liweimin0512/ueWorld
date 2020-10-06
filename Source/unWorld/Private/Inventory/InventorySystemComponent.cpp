@@ -22,7 +22,7 @@ void UInventorySystemComponent::BeginPlay()
 
 	// ...
 	AmountOfInventory = 40;
-	InventoryData.SetNumUninitialized(AmountOfInventory);
+	InventoryData.SetNumUnsafeInternal(AmountOfInventory);
 }
 
 
@@ -64,7 +64,7 @@ bool UInventorySystemComponent::FillEmptySlotWithItem(FInventoryItem NewItem)
 	return false;
 }
 
-const TArray<FInventoryItem>& UInventorySystemComponent::GetInventoryDataMap() const
+const TArray<FInventoryItem>& UInventorySystemComponent::GetInventoryData() const
 {
 	// TODO: insert return statement here
 	return InventoryData;
@@ -100,10 +100,14 @@ void UInventorySystemComponent::GetItemByIndex(int32 index, bool& bEmpty, UItemD
 
 int32 UInventorySystemComponent::GetInventoryItemCount(int32 index) const
 {
-	FInventoryItem foundItem = InventoryData[index];
-	if (IsValid(foundItem.ItemAsset)) {
-		return foundItem.ItemAmount;
+	if (InventoryData.IsValidIndex(index))
+	{
+		FInventoryItem foundItem = InventoryData[index];
+		if (IsValid(foundItem.ItemAsset)) {
+			return foundItem.ItemAmount;
+		}
 	}
+
 	return int32();
 }
 

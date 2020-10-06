@@ -30,7 +30,7 @@ public:
 		TMap<FItemSlot, UItemDataAsset*> SlottedItems;
 
 	UFUNCTION(BlueprintCallable, Category = Inventory)
-	const TArray<FInventoryItem>& GetInventoryDataMap() const;
+	const TArray<FInventoryItem>& GetInventoryData() const;
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 	const TMap<FItemSlot, UItemDataAsset*>& GetSlottedItemMap() const;
 
