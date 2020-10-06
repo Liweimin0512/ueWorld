@@ -285,10 +285,11 @@ void AunWorldCharacter::FillSlottedAbilitySpecs(TMap<FItemSlot, FGameplayAbility
 				AbilityLevel = SlottedItem->AbilityLevel;
 			}
 
-			if (SlottedItem && SlottedItem->GrantedAbility)
+			if (SlottedItem && SlottedItem->AbilityName.IsValid())
 			{
 				// This will override anything from default
-				SlottedAbilitySpecs.Add(ItemPair.Key, FGameplayAbilitySpec(SlottedItem->GrantedAbility, AbilityLevel, INDEX_NONE, SlottedItem));
+				UGameplayAbilityBase* GrantedAbility = (UGameplayAbilityBase*)LoadClass<UGameplayAbilityBase>(NULL,TEXT(""));
+				SlottedAbilitySpecs.Add(ItemPair.Key, FGameplayAbilitySpec(GrantedAbility, AbilityLevel, INDEX_NONE, SlottedItem));
 			}
 		}
 	}

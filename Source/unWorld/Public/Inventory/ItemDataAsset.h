@@ -60,7 +60,7 @@ public:
 
 	/** Ability to grant if this item is slotted */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Abilities)
-		TSubclassOf<UGameplayAbilityBase> GrantedAbility;
+	FName AbilityName;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Abilities)
     int32 AbilityLevel;
