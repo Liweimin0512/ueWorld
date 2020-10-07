@@ -5,12 +5,12 @@
 
 void ARPGPlayerController::AddItem(FString ItemName, int32 ItemAmount)
 {
-	UItemDataAsset* ItemData = (UItemDataAsset*)LoadObject<UItemDataAsset>(NULL, TEXT("/Game/unWorld/Item/%s"), *ItemName);
+	FString ItemAssetPath = FString::Printf(TEXT("/Game/unWorld/Item/%s"), *ItemName);
+	UItemDataAsset* ItemData = (UItemDataAsset*)LoadObject<UItemDataAsset>(NULL, *ItemAssetPath);
 	FString strName = ItemName;
 	if (ItemData)
 	{
-		FText ItemDataName = ItemData->ItemName;
-		FString pathName = ItemDataName.ToString();
-		UKismetSystemLibrary::PrintString(this, TEXT(""));
+		FString ItemDataName = ItemData->ItemName.ToString();
+		UKismetSystemLibrary::PrintString(this, *ItemDataName);
 	}
 }
