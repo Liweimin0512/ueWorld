@@ -4,4 +4,6 @@
 #include "Modules/ModuleManager.h"
 
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, unWorld, "unWorld" );
- 
+
+//General Log
+DEFINE_LOG_CATEGORY(Inventory);

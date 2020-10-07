@@ -130,6 +130,22 @@ struct UNWORLD_API FInventoryItem
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Item)
 	int32 ItemAmount;
+
+	FInventoryItem()
+		: ItemAsset(nullptr)
+		, ItemAmount(1)
+	{}
+
+	FInventoryItem(UItemDataAsset* InItemAsset, int32 InItemAmount)
+		: ItemAsset(InItemAsset)
+		, ItemAmount(InItemAmount)
+	{}
+
+	/** Returns true if count is greater than 0 */
+	bool IsValid() const
+	{
+		return ItemAsset != nullptr && ItemAmount > 0;
+	}
 };
 
 

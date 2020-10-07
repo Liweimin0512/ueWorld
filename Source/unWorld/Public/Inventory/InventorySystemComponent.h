@@ -89,10 +89,15 @@ public:
 		bool LoadInventory();
 
 	UFUNCTION(BlueprintCallable, Category = Inventory)
-		void SearchEmptyInventorySlot(bool& bSuccess,int32& SlotIndex);
+		bool SearchEmptyInventorySlot(int32& SlotIndex);
 
 	UFUNCTION(BlueprintCallable, Category = Inventory)
-		void AddItem(FInventoryItem NewItem,int32 ItemAmound,bool& bSuccess,int32& Reset);
+		bool AddItem(FInventoryItem NewItem,int32 ItemAmount,int32& Reset);
+
+	UFUNCTION(BlueprintCallable,Category = Inventory)
+		bool SearchFreeStack(FInventoryItem Item,int32& Index);
+
+
 protected:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

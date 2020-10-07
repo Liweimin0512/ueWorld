@@ -22,7 +22,7 @@ void UInventorySystemComponent::BeginPlay()
 
 	// ...
 	AmountOfInventory = 40;
-	InventoryData.SetNumUnsafeInternal(AmountOfInventory);
+	InventoryData.SetNum(AmountOfInventory);
 }
 
 
@@ -36,19 +36,106 @@ bool UInventorySystemComponent::LoadInventory()
 	return false;
 }
 
-void UInventorySystemComponent::SearchEmptyInventorySlot(bool& bSuccess, int32& SlotIndex)
+bool UInventorySystemComponent::SearchEmptyInventorySlot(int32& SlotIndex)
 {
-	for (const FInventoryItem& foundItem : InventoryData)
+	for (int i = InventoryData.Num() - 1; i >= 0; i--)
 	{
-		if (!IsValid(foundItem.ItemAsset))
+		if (IsInventoryEmpty(i))
 		{
-			
+			SlotIndex = i;
+			return true;
 		}
+	}
+	SlotIndex = -1;
+	return false;
+}
+
+bool UInventorySystemComponent::AddItem(FInventoryItem NewItem, int32 NewAmount, int32& Reset)
+{
+	UItemDataAsset* ItemData = NewItem.ItemAsset;
+	
+	int32 foundIndex;
+	int32 Rest;
+
+	// Stacked = 0 表示不能堆叠
+	if (ItemData->Stacked != 0 )
+	{
+		if (SearchFreeStack(NewItem,foundIndex))
+		{
+			// 如果当前还有富裕的堆叠空间,则计算总数是否超过堆叠上限
+			int32 totalAmount = InventoryData[foundIndex].ItemAmount + NewAmount;
+			if ( totalAmount > ItemData->Stacked )
+			{
+				InventoryData[foundIndex] = FInventoryItem(ItemData, ItemData->Stacked);
+				AddItem(NewItem, totalAmount - ItemData->Stacked, Rest);
+				NotifyInventoryItemChanged(true,ItemData);
+				return true;
+			}
+			else
+			{
+				InventoryData[foundIndex] = FInventoryItem(ItemData, totalAmount);
+				NotifyInventoryItemChanged(true, ItemData);
+				return true;
+			}
+		}
+		else
+		{
+			if (SearchEmptyInventorySlot(foundIndex))
+			{
+				if (NewAmount > ItemData->Stacked)
+				{
+					//如果一次添加的数量过多，则进行递归操作
+					InventoryData[foundIndex] = FInventoryItem(ItemData, ItemData->Stacked);
+					
+					AddItem(NewItem, NewAmount - ItemData->Stacked, Rest);
+					NotifyInventoryItemChanged(true, ItemData);
+					return true;
+				}
+				else
+				{
+					InventoryData[foundIndex] = FInventoryItem(ItemData, NewAmount);
+					NotifyInventoryItemChanged(true, ItemData);
+					return true;
+				}
+			}
+			// 找不到空槽就返回失败
+			return false;
+		}
+	}
+	else
+	{
+		if (SearchEmptyInventorySlot(foundIndex))
+		{
+			InventoryData[foundIndex] = FInventoryItem(ItemData, 1);
+
+			if (NewAmount > 1)
+			{
+				AddItem(NewItem, NewAmount -1, Rest);
+			}
+			NotifyInventoryItemChanged(true, ItemData);
+			return true;
+		}
+		// 找不到空槽就返回失败
+		return false;
 	}
 }
 
-void UInventorySystemComponent::AddItem(FInventoryItem NewItem, int32 ItemAmound, bool& bSuccess, int32& Reset)
+bool UInventorySystemComponent::SearchFreeStack(FInventoryItem Item, int32& Index)
 {
+	UItemDataAsset* ItemData = Item.ItemAsset;
+	for (int i = InventoryData.Num() - 1; i >= 0; i--)
+	{
+		if (IsInventoryEmpty(i))
+		{
+			if (InventoryData[i].ItemAsset == ItemData && InventoryData[i].ItemAmount < ItemData->Stacked)
+			{
+				Index = i;
+				return true;
+			}
+		}
+	}
+	Index = -1;
+	return false;
 }
 
 // Called every frame
