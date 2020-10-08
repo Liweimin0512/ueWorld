@@ -25,7 +25,8 @@ public:
 
     /* Static types for items */
     static const FPrimaryAssetType WeaponItemType;
-
+	static const FPrimaryAssetType EquipItemType;
+	static const FPrimaryAssetType PotionItemType;
     
 	/** Returns the current AssetManager object */
 	static UAssetManagerBase& Get();

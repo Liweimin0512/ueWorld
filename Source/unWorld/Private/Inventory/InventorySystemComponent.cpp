@@ -36,19 +36,6 @@ bool UInventorySystemComponent::LoadInventory()
 	return false;
 }
 
-bool UInventorySystemComponent::SearchEmptyInventorySlot(int32& SlotIndex)
-{
-	for (int i = InventoryData.Num() - 1; i >= 0; i--)
-	{
-		if (IsInventoryEmpty(i))
-		{
-			SlotIndex = i;
-			return true;
-		}
-	}
-	SlotIndex = -1;
-	return false;
-}
 
 bool UInventorySystemComponent::AddItem(FInventoryItem NewItem, int32 NewAmount, int32& Reset)
 {
@@ -120,12 +107,13 @@ bool UInventorySystemComponent::AddItem(FInventoryItem NewItem, int32 NewAmount,
 	}
 }
 
+// 搜索还有富裕的堆叠空间
 bool UInventorySystemComponent::SearchFreeStack(FInventoryItem Item, int32& Index)
 {
 	UItemDataAsset* ItemData = Item.ItemAsset;
-	for (int i = InventoryData.Num() - 1; i >= 0; i--)
+	for (int i = 0; i < InventoryData.Num(); i++)
 	{
-		if (IsInventoryEmpty(i))
+		if (!IsInventoryEmpty(i))
 		{
 			if (InventoryData[i].ItemAsset == ItemData && InventoryData[i].ItemAmount < ItemData->Stacked)
 			{
@@ -135,6 +123,35 @@ bool UInventorySystemComponent::SearchFreeStack(FInventoryItem Item, int32& Inde
 		}
 	}
 	Index = -1;
+	return false;
+}
+
+// 搜索空的背包格
+bool UInventorySystemComponent::SearchEmptyInventorySlot(int32& SlotIndex)
+{
+	for (int i = 0; i < InventoryData.Num(); i++)
+	{
+		if (IsInventoryEmpty(i))
+		{
+			SlotIndex = i;
+			return true;
+		}
+	}
+	SlotIndex = -1;
+	return false;
+}
+
+bool UInventorySystemComponent::AddItemByName(FString ItemName, int32 ItemAmount)
+{
+	int32 Rset;
+	FString ItemAssetPath = FString::Printf(TEXT("/Game/unWorld/Item/%s"), *ItemName);
+	UItemDataAsset* ItemData = (UItemDataAsset*)LoadObject<UItemDataAsset>(NULL, *ItemAssetPath);
+
+	if (ItemData)
+	{
+		return AddItem(FInventoryItem(ItemData,ItemAmount), ItemAmount, Rset);
+	}
+
 	return false;
 }
 

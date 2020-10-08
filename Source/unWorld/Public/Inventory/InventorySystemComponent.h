@@ -9,7 +9,7 @@
 #include "InventorySystemComponent.generated.h"
 
 
-UCLASS(Blueprintable ,ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, BlueprintType, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UNWORLD_API UInventorySystemComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -26,7 +26,7 @@ public:
 		TArray<FInventoryItem> InventoryData;
 
 	/** Map of slot, from type/num to item, initialized from ItemSlotsPerType on RPGGameInstanceBase */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Inventory)
 		TMap<FItemSlot, UItemDataAsset*> SlottedItems;
 
 	UFUNCTION(BlueprintCallable, Category = Inventory)
@@ -97,6 +97,8 @@ public:
 	UFUNCTION(BlueprintCallable,Category = Inventory)
 		bool SearchFreeStack(FInventoryItem Item,int32& Index);
 
+	UFUNCTION(BlueprintCallable, Category = Inventory)
+		bool AddItemByName(FString ItemName,int32 ItemAmount);
 
 protected:
 	// Called every frame

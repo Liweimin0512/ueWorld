@@ -6,6 +6,8 @@
 //#include "AbilitySystemGlobals.h"
 
 const FPrimaryAssetType	UAssetManagerBase::WeaponItemType = TEXT("Weapon");
+const FPrimaryAssetType UAssetManagerBase::EquipItemType = TEXT("Equip");
+const FPrimaryAssetType	UAssetManagerBase::PotionItemType = TEXT("Potion");
 
 UAssetManagerBase& UAssetManagerBase::Get()
 {

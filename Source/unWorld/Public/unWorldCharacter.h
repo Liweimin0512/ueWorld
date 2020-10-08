@@ -28,6 +28,10 @@ public:
 	// Implement IAbilitySystemInterface
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	/** Cached pointer to the inventory source for this character, can be null */
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Replicated, Category = Inventory)
+		UInventorySystemComponent* InventoryComponent;
+
 #pragma region Attribut
 
 	UFUNCTION(BlueprintCallable)
@@ -106,9 +110,7 @@ protected:
 	UPROPERTY()
 		UCoreAttributeSet* AttributeSet;
 
-	/** Cached pointer to the inventory source for this character, can be null */
-	UPROPERTY(BlueprintReadOnly)
-		UInventorySystemComponent* InventoryComponent;
+
 
 	/** If true we have initialized our abilities */
 	UPROPERTY()

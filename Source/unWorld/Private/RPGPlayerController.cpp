@@ -2,15 +2,15 @@
 
 
 #include "RPGPlayerController.h"
+#include "unWorldCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 void ARPGPlayerController::AddItem(FString ItemName, int32 ItemAmount)
 {
-	FString ItemAssetPath = FString::Printf(TEXT("/Game/unWorld/Item/%s"), *ItemName);
-	UItemDataAsset* ItemData = (UItemDataAsset*)LoadObject<UItemDataAsset>(NULL, *ItemAssetPath);
-	FString strName = ItemName;
-	if (ItemData)
+	AunWorldCharacter* PlayerCharacter = Cast<AunWorldCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
+	if (PlayerCharacter)
 	{
-		FString ItemDataName = ItemData->ItemName.ToString();
-		UKismetSystemLibrary::PrintString(this, *ItemDataName);
+		UInventorySystemComponent* InventoryComponent = PlayerCharacter->InventoryComponent;
+		InventoryComponent->AddItemByName(ItemName, ItemAmount);
 	}
 }
