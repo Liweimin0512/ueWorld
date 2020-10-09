@@ -8,6 +8,7 @@
 const FPrimaryAssetType	UAssetManagerBase::WeaponItemType = TEXT("Weapon");
 const FPrimaryAssetType UAssetManagerBase::EquipItemType = TEXT("Equip");
 const FPrimaryAssetType	UAssetManagerBase::PotionItemType = TEXT("Potion");
+const FPrimaryAssetType	UAssetManagerBase::TokenItemType = TEXT("Token");
 
 UAssetManagerBase& UAssetManagerBase::Get()
 {

@@ -138,11 +138,6 @@ void AunWorldCharacter::HandleHealthChanged(float DeltaValue, const struct FGame
 	}
 }
 
-int32 AunWorldCharacter::GetCharacterLevel()
-{
-	return 1;
-}
-
 void AunWorldCharacter::GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbilityBase*>& ActiveAbilities)
 {
 	if (AbilitySystemComponent)
@@ -293,4 +288,38 @@ void AunWorldCharacter::FillSlottedAbilitySpecs(TMap<FItemSlot, FGameplayAbility
 			}
 		}
 	}
+}
+
+int32 AunWorldCharacter::GetCharacterLevel() const
+{
+	return CharacterLevel;
+}
+
+bool AunWorldCharacter::SetCharacterLevel(int32 NewLevel)
+{
+	if (CharacterLevel != NewLevel && NewLevel > 0)
+	{
+		// Our level changed so we need to refresh abilities
+		// TODO RemoveStartupGameplayAbilities();
+		CharacterLevel = NewLevel;
+		AddStartupGameplayAbilities();
+
+		return true;
+	}
+	return false;
+}
+
+int32 AunWorldCharacter::GetCurrentExp() const
+{
+	return 1;
+}
+
+int32 AunWorldCharacter::GetMaxExp() const
+{
+	return 1;
+}
+
+bool AunWorldCharacter::UpgradeLevel()
+{
+	return false;
 }

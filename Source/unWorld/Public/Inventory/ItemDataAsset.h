@@ -47,6 +47,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
     int32 Stacked;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
+		bool CanDisplay = true;
+
     /** Maximum number of instances that can be in inventory at once, <= 0 means infinite */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Max)
     int32 MaxCount;
@@ -64,6 +67,7 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Abilities)
     int32 AbilityLevel;
+
 
     /** Returns the logical name, equivalent to the primary asset id */
     UFUNCTION(BlueprintCallable, Category = Item)

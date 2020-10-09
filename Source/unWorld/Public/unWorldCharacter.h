@@ -32,6 +32,32 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Replicated, Category = Inventory)
 		UInventorySystemComponent* InventoryComponent;
 
+#pragma region LevelAndExp
+protected:
+
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = Abilities)
+		int32 CharacterLevel;
+public:
+	/** Returns the character level that is passed to the ability system */
+	UFUNCTION(BlueprintCallable, Category = Level)
+		virtual int32 GetCharacterLevel() const;
+
+	/** Modifies the character level, this may change abilities. Returns true on success */
+	UFUNCTION(BlueprintCallable, Category = Level)
+		virtual bool SetCharacterLevel(int32 NewLevel);
+
+	UFUNCTION(BlueprintCallable, Category = Level)
+		virtual int32 GetCurrentExp() const;
+	
+	UFUNCTION(BlueprintCallable, Category = Level)
+		virtual int32 GetMaxExp() const;
+
+	UFUNCTION(BlueprintCallable, Category = Level)
+		virtual bool UpgradeLevel();
+
+#pragma endregion
+
+
 #pragma region Attribut
 
 	UFUNCTION(BlueprintCallable)
@@ -45,9 +71,6 @@ public:
 
 	//UFUNCTION(BlueprintImplementableEvent)
 	//void RefreshSlottedGameplayAbilities();
-
-	UFUNCTION(BlueprintCallable, Category = "Abilities")
-		int32 GetCharacterLevel();
 
 	/** Returns a list of active abilities matching the specified tags. This only returns if the ability is currently running */
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
@@ -87,10 +110,7 @@ public:
 
 
 
-protected:
 
-	UPROPERTY(EditAnywhere, Replicated, Category = Abilities)
-		int32 CharacterLevel;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Abilities)
 		TArray<TSubclassOf<UGameplayAbilityBase>> GameplayAbilities;
