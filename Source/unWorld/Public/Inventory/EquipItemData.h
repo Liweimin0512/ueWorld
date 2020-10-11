@@ -23,7 +23,7 @@ public:
 	}
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Equip)
-	USkeleton* EquipMesh;
+	USkeletalMesh* EquipMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Equip)
 	int32 EquipType;

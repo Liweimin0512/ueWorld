@@ -100,6 +100,21 @@ float AunWorldCharacter::GetMaxHealth() const
 	return AttributeSet->GetMaxHealth();
 }
 
+float AunWorldCharacter::GetSan() const
+{
+	return AttributeSet->GetSan();
+}
+
+float AunWorldCharacter::GetMaxSan() const
+{
+	return AttributeSet->GetMaxSan();
+}
+
+float AunWorldCharacter::GetAttack() const
+{
+	return AttributeSet->GetAttack();
+}
+
 void AunWorldCharacter::AddStartupGameplayAbilities()
 {
 	check(AbilitySystemComponent)

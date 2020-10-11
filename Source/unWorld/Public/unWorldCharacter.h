@@ -64,6 +64,12 @@ public:
 		virtual float GetHealth() const;
 	UFUNCTION(BlueprintCallable)
 		virtual float GetMaxHealth() const;
+	UFUNCTION(BlueprintCallable)
+		virtual float GetSan() const;
+	UFUNCTION(BlueprintCallable)
+		virtual float GetMaxSan() const;
+	UFUNCTION(BlueprintCallable)
+		virtual float GetAttack() const;
 
 #pragma endregion Attribut
 
