@@ -75,9 +75,6 @@ public:
 
 #pragma region Abilities
 
-	//UFUNCTION(BlueprintImplementableEvent)
-	//void RefreshSlottedGameplayAbilities();
-
 	/** Returns a list of active abilities matching the specified tags. This only returns if the ability is currently running */
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 		void GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbilityBase*>& ActiveAbilities);
@@ -185,6 +182,18 @@ public:
 
 	// Called from CoreAttributeSet, these call BP events above
 	virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
+
+protected:
+	/** Delegate handles */
+	FDelegateHandle InventoryUpdateHandle;
+	FDelegateHandle InventoryLoadedHandle;
+
+	/** Called when slotted items change, bound to delegate on interface */
+	void OnItemSlotChanged(FItemSlot ItemSlot, UItemDataAsset* Item);
+	void RefreshSlottedGameplayAbilities();
+
+	/** Remove slotted gameplay abilities, if force is false it only removes invalid ones */
+	void RemoveSlottedGameplayAbilities(bool bRemoveAll);
 
 	// Friended to allow access to handle functions above
 	friend UCoreAttributeSet;

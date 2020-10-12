@@ -8,4 +8,4 @@
 #include "CoreMinimal.h"
 
 //General Log
-UNWORLD_API DECLARE_LOG_CATEGORY_EXTERN(Inventory, Log, All);
+UNWORLD_API DECLARE_LOG_CATEGORY_EXTERN(LogUnWorld, Log, All);

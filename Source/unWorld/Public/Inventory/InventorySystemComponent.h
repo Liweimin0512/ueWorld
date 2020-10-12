@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "unWorld.h"
 #include "Components/ActorComponent.h"
 #include "ItemDataAsset.h"
 #include "InventoryType.h"
@@ -21,30 +21,21 @@ public:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	/** Map of all items owned by this player, from definition to data */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory)
-		TArray<FInventoryItem> InventoryData;
-
-	/** Map of slot, from type/num to item, initialized from ItemSlotsPerType on RPGGameInstanceBase */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Inventory)
-		TMap<FItemSlot, UItemDataAsset*> SlottedItems;
-
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 	const TArray<FInventoryItem>& GetInventoryData() const;
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 	const TMap<FItemSlot, UItemDataAsset*>& GetSlottedItemMap() const;
 
-
 	/** Delegate called when an inventory item has been added or removed */
 	UPROPERTY(BlueprintAssignable, Category = Inventory)
-		FOnInventoryItemChanged OnInventoryItemChanged;
+	FOnInventoryItemChanged OnInventoryItemChanged;
 
 	/** Native version above, called before BP delegate */
 	FOnInventoryItemChangedNative OnInventoryItemChangedNative;
 
 	/** Delegate called when an inventory slot has changed */
 	UPROPERTY(BlueprintAssignable, Category = Inventory)
-		FOnSlottedItemChanged OnSlottedItemChanged;
+	FOnSlottedItemChanged OnSlottedItemChanged;
 
 	/** Native version above, called before BP delegate */
 	FOnSlottedItemChangedNative OnSlottedItemChangedNative;
@@ -61,7 +52,7 @@ public:
 	void InventoryItemChanged(bool bAdded, UItemDataAsset* Item);
 
 	/** Called after an item was equipped and we notified all delegates */
-	UFUNCTION(BlueprintImplementableEvent, Category = Inventory)
+	UFUNCTION(BlueprintImplementableEvent, Category = Slot)
 	void SlottedItemChanged(FItemSlot ItemSlot, UItemDataAsset* Item);
 
 
@@ -71,14 +62,6 @@ public:
 		void GetItemByIndex(int32 index, bool& bEmpty, UItemDataAsset*& item, int32& Amount) const;
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 		int32 GetInventoryItemCount(int32 index) const;
-
-	/** Sets slot to item, will remove from other slots if necessary. If passing null this will empty the slot */
-	UFUNCTION(BlueprintCallable, Category = Inventory)
-		bool SetSlottedItem(FItemSlot ItemSlot, UItemDataAsset* Item);
-
-	/** Returns item in slot, or null if empty */
-	UFUNCTION(BlueprintPure, Category = Inventory)
-		UItemDataAsset* GetSlottedItem(FItemSlot ItemSlot) const;
 
 	/** Manually save the inventory, this is called from add/remove functions automatically */
 	UFUNCTION(BlueprintCallable, Category = Inventory)
@@ -93,6 +76,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 		bool AddItem(FInventoryItem NewItem,int32 ItemAmount,int32& Reset);
+	UFUNCTION(BlueprintCallable, Category = Inventory)
+		bool RmoveItem(int32 ItemIndex, int32 ItemAmount);
 
 	UFUNCTION(BlueprintCallable,Category = Inventory)
 		bool SearchFreeStack(FInventoryItem Item,int32& Index);
@@ -100,12 +85,38 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 		bool AddItemByName(FString ItemName,int32 ItemAmount);
 
+	UFUNCTION(BlueprintCallable, Category = Slot)
+		bool EquipItemBySlot(FItemSlot ItemSlot, int32 ItemIndex);
+
+	UFUNCTION(BlueprintCallable, Category = Slot)
+		bool UnEquipItemBySlot(FItemSlot ItemSlot);
+
 protected:
+
+	/** Map of all items owned by this player, from definition to data */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory)
+		TArray<FInventoryItem> InventoryData;
+
+	/** Map of slot, from type/num to item, initialized from ItemSlotsPerType on RPGGameInstanceBase */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Inventory)
+		TMap<FItemSlot, UItemDataAsset*> SlottedItems;
+
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Inventory)
 	int32 AmountOfInventory;
+
+	UFUNCTION(BlueprintCallable, Category = Slot)
+		bool SetInventoryItem(int32 ItemIndex, FInventoryItem Item);
+
+	/** Sets slot to item, will remove from other slots if necessary. If passing null this will empty the slot */
+	UFUNCTION(BlueprintCallable, Category = Slot)
+		bool SetSlottedItem(FItemSlot ItemSlot, UItemDataAsset* Item);
+
+	/** Returns item in slot, or null if empty */
+	UFUNCTION(BlueprintPure, Category = Slot)
+		UItemDataAsset* GetSlottedItem(FItemSlot ItemSlot) const;
 
 	bool FillEmptySlotWithItem(FInventoryItem NewItem);
 

@@ -107,6 +107,37 @@ bool UInventorySystemComponent::AddItem(FInventoryItem NewItem, int32 NewAmount,
 	}
 }
 
+bool UInventorySystemComponent::RmoveItem(int32 ItemIndex, int32 ItemAmount)
+{
+	bool HasFoundItem;
+	UItemDataAsset* FoundItemData;
+	int32 FoundItemAmount;
+
+	GetItemByIndex(ItemIndex, HasFoundItem, FoundItemData, FoundItemAmount);
+	if (HasFoundItem)
+	{
+		if (FoundItemAmount <= 1)
+		{
+			if (SetInventoryItem(ItemIndex, FInventoryItem(nullptr, 0)))
+			{
+				NotifyInventoryItemChanged(false, FoundItemData);
+				return true;
+			}
+			return false;
+		}
+		else
+		{
+			if (SetInventoryItem(ItemIndex, FInventoryItem(FoundItemData, FoundItemAmount - ItemAmount)))
+			{
+				NotifyInventoryItemChanged(false, FoundItemData);
+				return true;
+			}
+			return false;
+		}
+	}
+	return false;
+}
+
 // 搜索还有富裕的堆叠空间
 bool UInventorySystemComponent::SearchFreeStack(FInventoryItem Item, int32& Index)
 {
@@ -152,6 +183,61 @@ bool UInventorySystemComponent::AddItemByName(FString ItemName, int32 ItemAmount
 		return AddItem(FInventoryItem(ItemData,ItemAmount), ItemAmount, Rset);
 	}
 
+	return false;
+}
+
+bool UInventorySystemComponent::EquipItemBySlot(FItemSlot ItemSlot, int32 ItemIndex)
+{
+	UItemDataAsset* NewItemData;
+	bool IsEmptyItem;
+	int32 NewItemAmount;
+
+	GetItemByIndex(ItemIndex, IsEmptyItem,NewItemData,NewItemAmount);
+
+	if (IsEmptyItem)
+	{
+		UE_LOG(LogUnWorld,Warning,TEXT("装备的道具不能为空！"));
+		return false;
+	}
+	// 判断当前装备槽中是否已经有装备
+	// 有的话交换位置
+	UItemDataAsset* OldItemData = GetSlottedItem(ItemSlot);
+	if (OldItemData)
+	{
+		 if (SetSlottedItem(ItemSlot, NewItemData))
+		 {
+			 SetInventoryItem(ItemIndex, FInventoryItem(OldItemData, 1));
+			 return true;
+		 }
+		 return false; 
+	}
+	// 否则直接设置
+	else
+	{
+		if (SetSlottedItem(ItemSlot, NewItemData))
+		{
+			// 装备成功了，将道具从背包中移除
+			SetInventoryItem(ItemIndex, FInventoryItem(nullptr, 0));
+			return true;
+		}
+		return false;
+	}
+	return false;
+}
+
+bool UInventorySystemComponent::UnEquipItemBySlot(FItemSlot ItemSlot)
+{
+	int32 FoundIndex;
+	UItemDataAsset* SlotItemData = GetSlottedItem(ItemSlot);
+	// 寻找背包中空位置，找不到不能卸载
+	if (SearchEmptyInventorySlot(FoundIndex) && SlotItemData)
+	{
+		if (SetSlottedItem(ItemSlot, nullptr))
+		{
+			SetInventoryItem(FoundIndex, FInventoryItem(SlotItemData, 1));
+		}
+		return true;
+	}
 	return false;
 }
 
@@ -213,6 +299,24 @@ int32 UInventorySystemComponent::GetInventoryItemCount(int32 index) const
 	}
 
 	return int32();
+}
+
+bool UInventorySystemComponent::SetInventoryItem(int32 ItemIndex, FInventoryItem Item)
+{
+	// 包括增、删和改三种操作
+	if (Item.IsValid())
+	{
+		InventoryData[ItemIndex] = Item;
+		NotifyInventoryItemChanged(false,Item.ItemAsset);
+		return true;
+	}
+	else
+	{
+		InventoryData[ItemIndex] = FInventoryItem(nullptr,0);
+		NotifyInventoryItemChanged(false, nullptr);
+		return true;
+	}
+	return false;
 }
 
 bool UInventorySystemComponent::SetSlottedItem(FItemSlot ItemSlot, UItemDataAsset* Item)

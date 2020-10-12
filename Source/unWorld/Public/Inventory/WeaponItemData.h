@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ItemDataAsset.h"
+#include "EquipItemData.h"
 #include "WeaponItemData.generated.h"
 
 /**
- * 
+ * 武器是一种特殊装备
  */
 UCLASS()
-class UNWORLD_API UWeaponItemData : public UItemDataAsset
+class UNWORLD_API UWeaponItemData : public UEquipItemData
 {
 	GENERATED_BODY()
 

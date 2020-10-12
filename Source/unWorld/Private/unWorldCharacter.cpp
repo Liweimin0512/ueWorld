@@ -64,6 +64,11 @@ void AunWorldCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
+	if (InventoryComponent)
+	{
+		InventoryUpdateHandle = InventoryComponent->OnSlottedItemChangedNative.AddUObject(this, &AunWorldCharacter::OnItemSlotChanged);
+	}
+
 	if (AbilitySystemComponent)
 	{
 		AbilitySystemComponent->InitAbilityActorInfo(this,this);
@@ -119,30 +124,35 @@ void AunWorldCharacter::AddStartupGameplayAbilities()
 {
 	check(AbilitySystemComponent)
 
-	if ( bAbilitiesInitialized ) return;
-
-	// 技能初始化
-	for (TSubclassOf<UGameplayAbilityBase>& StartupAbility : GameplayAbilities)
+	if (Role == ROLE_Authority && !bAbilitiesInitialized)
 	{
-		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility,CharacterLevel,INDEX_NONE,this));
-	}
-
-	// 效果初始化
-	for (TSubclassOf<UGameplayEffect>& gameplayEffect : PassiveGameplayEffects)
-	{
-		FGameplayEffectContextHandle effectHandle = AbilitySystemComponent->MakeEffectContext();
-		effectHandle.AddSourceObject(this);
-
-		FGameplayEffectSpecHandle newHandle = AbilitySystemComponent->MakeOutgoingSpec(gameplayEffect,CharacterLevel,effectHandle);
-		if (newHandle.IsValid())
+		// 技能初始化
+		for (TSubclassOf<UGameplayAbilityBase>& StartupAbility : GameplayAbilities)
 		{
-			FActiveGameplayEffectHandle activeGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*newHandle.Data.Get(),AbilitySystemComponent);	
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, CharacterLevel, INDEX_NONE, this));
 		}
+
+		// 效果初始化
+		for (TSubclassOf<UGameplayEffect>& gameplayEffect : PassiveGameplayEffects)
+		{
+			FGameplayEffectContextHandle effectHandle = AbilitySystemComponent->MakeEffectContext();
+			effectHandle.AddSourceObject(this);
+
+			FGameplayEffectSpecHandle newHandle = AbilitySystemComponent->MakeOutgoingSpec(gameplayEffect, CharacterLevel, effectHandle);
+			if (newHandle.IsValid())
+			{
+				FActiveGameplayEffectHandle activeGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*newHandle.Data.Get(), AbilitySystemComponent);
+			}
+		}
+
+		AddSlottedGameplayAbilities();
+		bAbilitiesInitialized = true;
+		UE_LOG(LogUnWorld, Log, TEXT("AbilitiesInitialized = true"));
 	}
-
-
-
-	bAbilitiesInitialized = true;
+	else
+	{
+		UE_LOG(LogUnWorld, Warning, TEXT("AddStartupGameplayAbilities: bAbilitiesInitialized || Role != ROLE_Authority"));
+	}
 }
 
 void AunWorldCharacter::HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags)
@@ -167,77 +177,52 @@ bool AunWorldCharacter::ActivateAbilitiesWithItemSlot(FItemSlot ItemSlot, bool b
 
 	if (FoundHandle && AbilitySystemComponent)
 	{
+		UE_LOG(LogUnWorld, Log, TEXT("Can Found Ability: %s !"), *FoundHandle->ToString());
 		return AbilitySystemComponent->TryActivateAbility(*FoundHandle, bAllowRemoteActivation);
 	}
-
+	UE_LOG(LogUnWorld,Warning,TEXT("Can not Found Ability!"));
 	return false;
 }
 
-//void AunWorldCharacter::RefreshSlottedGameplayAbilities() {
-//	if (bAbilitiesInitialized)
-//	{
-//		// 刷新任何无效能力并添加新的
-//		RemoveSlottedGameplayAbilities(false);
-//		AddSlottedGameplayAbilities();
-//	}
-//}
-//
-//void AunWorldCharacter::RemoveSlottedGameplayAbilities(bool bRemoveAll)
-//{
-//	TMap<FItemSlot, FGameplayAbilitySpec> SlottedAbilitySpecs;
-//
-//	if (!bRemoveAll)
-//	{
-//		// Fill in map so we can compare
-//		FillSlottedAbilitySpecs(SlottedAbilitySpecs);
-//	}
-//
-//	for (TPair<FItemSlot, FGameplayAbilitySpecHandle>& ExistingPair : SlottedAbilities)
-//	{
-//		FGameplayAbilitySpec* FoundSpec = AbilitySystemComponent->FindAbilitySpecFromHandle(ExistingPair.Value);
-//		bool bShouldRemove = bRemoveAll || !FoundSpec;
-//
-//		if (!bShouldRemove)
-//		{
-//			// Need to check desired ability specs, if we got here FoundSpec is valid
-//			FGameplayAbilitySpec* DesiredSpec = SlottedAbilitySpecs.Find(ExistingPair.Key);
-//
-//			if (!DesiredSpec || DesiredSpec->Ability != FoundSpec->Ability || DesiredSpec->SourceObject != FoundSpec->SourceObject)
-//			{
-//				bShouldRemove = true;
-//			}
-//		}
-//
-//		if (bShouldRemove)
-//		{
-//			if (FoundSpec)
-//			{
-//				// Need to remove registered ability
-//				AbilitySystemComponent->ClearAbility(ExistingPair.Value);
-//			}
-//
-//			// Make sure handle is cleared even if ability wasn't found
-//			ExistingPair.Value = FGameplayAbilitySpecHandle();
-//		}
-//	}
-//}
+void AunWorldCharacter::RemoveSlottedGameplayAbilities(bool bRemoveAll)
+{
+	TMap<FItemSlot, FGameplayAbilitySpec> SlottedAbilitySpecs;
 
-//void AunWorldCharacter::AddSlottedGameplayAbilities()
-//{
-//	TMap<FItemSlot, FGameplayAbilitySpec> SlottedAbilitySpecs;
-//	FillSlottedAbilitySpecs(SlottedAbilitySpecs);
-//
-//	// Now add abilities if needed
-//	for (const TPair<FItemSlot, FGameplayAbilitySpec>& SpecPair : SlottedAbilitySpecs)
-//	{
-//		FGameplayAbilitySpecHandle& SpecHandle = SlottedAbilities.FindOrAdd(SpecPair.Key);
-//
-//		if (!SpecHandle.IsValid())
-//		{
-//			SpecHandle = AbilitySystemComponent->GiveAbility(SpecPair.Value);
-//		}
-//	}
-//}
+	if (!bRemoveAll)
+	{
+		// Fill in map so we can compare
+		FillSlottedAbilitySpecs(SlottedAbilitySpecs);
+	}
+
+	for (TPair<FItemSlot, FGameplayAbilitySpecHandle>& ExistingPair : SlottedAbilities)
+	{
+		FGameplayAbilitySpec* FoundSpec = AbilitySystemComponent->FindAbilitySpecFromHandle(ExistingPair.Value);
+		bool bShouldRemove = bRemoveAll || !FoundSpec;
+
+		if (!bShouldRemove)
+		{
+			// Need to check desired ability specs, if we got here FoundSpec is valid
+			FGameplayAbilitySpec* DesiredSpec = SlottedAbilitySpecs.Find(ExistingPair.Key);
+
+			if (!DesiredSpec || DesiredSpec->Ability != FoundSpec->Ability || DesiredSpec->SourceObject != FoundSpec->SourceObject)
+			{
+				bShouldRemove = true;
+			}
+		}
+
+		if (bShouldRemove)
+		{
+			if (FoundSpec)
+			{
+				// Need to remove registered ability
+				AbilitySystemComponent->ClearAbility(ExistingPair.Value);
+			}
+
+			// Make sure handle is cleared even if ability wasn't found
+			ExistingPair.Value = FGameplayAbilitySpecHandle();
+		}
+	}
+}
 
 bool AunWorldCharacter::ActivateAbilitiesWithTags(FGameplayTagContainer AbilityTags, bool bAllowRemoteActivation)
 {
@@ -298,7 +283,14 @@ void AunWorldCharacter::FillSlottedAbilitySpecs(TMap<FItemSlot, FGameplayAbility
 			if (SlottedItem && SlottedItem->AbilityName.IsValid())
 			{
 				// This will override anything from default
-				UGameplayAbilityBase* GrantedAbility = (UGameplayAbilityBase*)LoadClass<UGameplayAbilityBase>(NULL,TEXT(""));
+				FString AbilityAssetPath = FString::Printf(TEXT("Blueprint'/Game/unWorld/Abilities/%s.%s_C'")
+					, *SlottedItem->AbilityName.ToString(), *SlottedItem->AbilityName.ToString());
+				UGameplayAbilityBase* GrantedAbility = (UGameplayAbilityBase*)LoadClass<UGameplayAbilityBase>(NULL, *AbilityAssetPath);
+				if (!GrantedAbility)
+				{
+					UE_LOG(LogUnWorld, Warning, TEXT("Can not Found Ability On Path: %s"), *AbilityAssetPath);
+					return;
+				}
 				SlottedAbilitySpecs.Add(ItemPair.Key, FGameplayAbilitySpec(GrantedAbility, AbilityLevel, INDEX_NONE, SlottedItem));
 			}
 		}
@@ -337,4 +329,23 @@ int32 AunWorldCharacter::GetMaxExp() const
 bool AunWorldCharacter::UpgradeLevel()
 {
 	return false;
+}
+
+void AunWorldCharacter::OnItemSlotChanged(FItemSlot ItemSlot, UItemDataAsset* Item)
+{
+	UE_LOG(LogUnWorld, Log, TEXT("OnItemSlotChanged!"));
+	RefreshSlottedGameplayAbilities();
+}
+
+void AunWorldCharacter::RefreshSlottedGameplayAbilities()
+{
+	if (bAbilitiesInitialized)
+	{
+		// Refresh any invalid abilities and adds new ones
+		RemoveSlottedGameplayAbilities(false);
+		AddSlottedGameplayAbilities();
+	}
+	else {
+		UE_LOG(LogUnWorld, Warning, TEXT("bAbilitiesInitialized is False!"));
+	}
 }
