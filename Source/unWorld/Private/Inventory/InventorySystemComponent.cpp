@@ -229,8 +229,13 @@ bool UInventorySystemComponent::UnEquipItemBySlot(FItemSlot ItemSlot)
 {
 	int32 FoundIndex;
 	UItemDataAsset* SlotItemData = GetSlottedItem(ItemSlot);
+	
+	if (!SlotItemData)
+	{
+		UE_LOG(LogUnWorld,Warning,TEXT("Can not Fount SlotItem!"));
+	}
 	// 寻找背包中空位置，找不到不能卸载
-	if (SearchEmptyInventorySlot(FoundIndex) && SlotItemData)
+	if (SearchEmptyInventorySlot(FoundIndex))
 	{
 		if (SetSlottedItem(ItemSlot, nullptr))
 		{

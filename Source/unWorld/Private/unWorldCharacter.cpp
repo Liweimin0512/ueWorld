@@ -177,7 +177,7 @@ bool AunWorldCharacter::ActivateAbilitiesWithItemSlot(FItemSlot ItemSlot, bool b
 
 	if (FoundHandle && AbilitySystemComponent)
 	{
-		UE_LOG(LogUnWorld, Log, TEXT("Can Found Ability: %s !"), *FoundHandle->ToString());
+		//UE_LOG(LogUnWorld, Log, TEXT("Can Found Ability: %s !"), *FoundHandle->ToString());
 		return AbilitySystemComponent->TryActivateAbility(*FoundHandle, bAllowRemoteActivation);
 	}
 	UE_LOG(LogUnWorld,Warning,TEXT("Can not Found Ability!"));
@@ -291,6 +291,7 @@ void AunWorldCharacter::FillSlottedAbilitySpecs(TMap<FItemSlot, FGameplayAbility
 					UE_LOG(LogUnWorld, Warning, TEXT("Can not Found Ability On Path: %s"), *AbilityAssetPath);
 					return;
 				}
+				//UE_LOG(LogUnWorld, Warning, TEXT("Get Ability By Name: %s"), *GrantedAbility->GetFName().ToString());
 				SlottedAbilitySpecs.Add(ItemPair.Key, FGameplayAbilitySpec(GrantedAbility, AbilityLevel, INDEX_NONE, SlottedItem));
 			}
 		}
