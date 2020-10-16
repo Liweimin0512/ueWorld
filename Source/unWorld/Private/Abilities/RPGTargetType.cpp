@@ -5,7 +5,7 @@
 #include "Abilities/GameplayAbilityBase.h"
 #include "unWorldCharacter.h"
 
-void URPGTargetType::GetTargets_Implementation(ARPGCharacterBase* TargetingCharacter, AActor* TargetingActor, FGameplayEventData EventData, 
+void URPGTargetType::GetTargets_Implementation(AunWorldCharacter* TargetingCharacter, AActor* TargetingActor, FGameplayEventData EventData,
 	TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const
 {
 	return;

@@ -2,3 +2,5 @@
 
 
 #include "Abilities/GameplayAbilityBase.h"
+
+UGameplayAbilityBase::UGameplayAbilityBase(){}

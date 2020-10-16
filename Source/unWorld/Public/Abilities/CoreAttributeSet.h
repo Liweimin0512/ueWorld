@@ -44,8 +44,8 @@ public:
 	FGameplayAttributeData MaxSan;
 	ATTRIBUTE_ACCESSORS(UCoreAttributeSet, MaxSan)
 
-		UPROPERTY(BlueprintReadOnly, Category = "Attack", ReplicatedUsing = OnRep_Attack)
-		FGameplayAttributeData Attack;
+	UPROPERTY(BlueprintReadOnly, Category = "Attack", ReplicatedUsing = OnRep_Attack)
+	FGameplayAttributeData Attack;
 	ATTRIBUTE_ACCESSORS(UCoreAttributeSet, Attack)
 
 
