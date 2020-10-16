@@ -280,19 +280,19 @@ void AunWorldCharacter::FillSlottedAbilitySpecs(TMap<FItemSlot, FGameplayAbility
 				AbilityLevel = SlottedItem->AbilityLevel;
 			}
 
-			if (SlottedItem && SlottedItem->AbilityName.IsValid())
+			if (SlottedItem && SlottedItem->GrantedAbility)
 			{
 				// This will override anything from default
-				FString AbilityAssetPath = FString::Printf(TEXT("Blueprint'/Game/unWorld/Abilities/%s.%s_C'")
-					, *SlottedItem->AbilityName.ToString(), *SlottedItem->AbilityName.ToString());
-				UGameplayAbilityBase* GrantedAbility = (UGameplayAbilityBase*)LoadClass<UGameplayAbilityBase>(NULL, *AbilityAssetPath);
-				if (!GrantedAbility)
+				//FString AbilityAssetPath = FString::Printf(TEXT("Blueprint'/Game/unWorld/Abilities/%s.%s_C'")
+				//	, *SlottedItem->AbilityName.ToString(), *SlottedItem->AbilityName.ToString());
+				//UGameplayAbility* GrantedAbility = (UGameplayAbility*)LoadClass<UGameplayAbility>(NULL, *AbilityAssetPath);
+				if (!SlottedItem->GrantedAbility)
 				{
-					UE_LOG(LogUnWorld, Warning, TEXT("Can not Found Ability On Path: %s"), *AbilityAssetPath);
+					UE_LOG(LogUnWorld, Warning, TEXT("Can not Found Ability On Path: %s"), *SlottedItem->GrantedAbility->GetName());
 					return;
 				}
 				//UE_LOG(LogUnWorld, Warning, TEXT("Get Ability By Name: %s"), *GrantedAbility->GetFName().ToString());
-				SlottedAbilitySpecs.Add(ItemPair.Key, FGameplayAbilitySpec(GrantedAbility, AbilityLevel, INDEX_NONE, SlottedItem));
+				SlottedAbilitySpecs.Add(ItemPair.Key, FGameplayAbilitySpec(SlottedItem->GrantedAbility, AbilityLevel, INDEX_NONE, SlottedItem));
 			}
 		}
 	}
