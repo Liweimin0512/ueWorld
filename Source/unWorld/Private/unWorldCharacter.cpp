@@ -115,9 +115,9 @@ float AunWorldCharacter::GetMaxSan() const
 	return AttributeSet->GetMaxSan();
 }
 
-float AunWorldCharacter::GetAttack() const
+float AunWorldCharacter::GetAttackPower() const
 {
-	return AttributeSet->GetAttack();
+	return AttributeSet->GetAttackPower();
 }
 
 void AunWorldCharacter::AddStartupGameplayAbilities()

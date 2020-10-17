@@ -44,10 +44,20 @@ public:
 	FGameplayAttributeData MaxSan;
 	ATTRIBUTE_ACCESSORS(UCoreAttributeSet, MaxSan)
 
-	UPROPERTY(BlueprintReadOnly, Category = "Attack", ReplicatedUsing = OnRep_Attack)
-	FGameplayAttributeData Attack;
-	ATTRIBUTE_ACCESSORS(UCoreAttributeSet, Attack)
+	/** AttackPower of the attacker is multiplied by the base Damage to reduce health, so 1.0 means no bonus */
+	UPROPERTY(BlueprintReadOnly, Category = "Damage", ReplicatedUsing = OnRep_AttackPower)
+	FGameplayAttributeData AttackPower;
+	ATTRIBUTE_ACCESSORS(UCoreAttributeSet, AttackPower)
 
+	/** Base Damage is divided by DefensePower to get actual damage done, so 1.0 means no bonus */
+	UPROPERTY(BlueprintReadOnly, Category = "Damage", ReplicatedUsing = OnRep_DefensePower)
+	FGameplayAttributeData DefensePower;
+	ATTRIBUTE_ACCESSORS(UCoreAttributeSet, DefensePower)
+
+	/** Damage is a 'temporary' attribute used by the DamageExecution to calculate final damage, which then turns into -Health */
+	UPROPERTY(BlueprintReadOnly, Category = "Mana", meta = (HideFromLevelInfos))
+	FGameplayAttributeData Damage;
+	ATTRIBUTE_ACCESSORS(UCoreAttributeSet, Damage)
 
 protected:
 	void AdjustAttributeFormMaxChange(FGameplayAttributeData& AffectedAttribute, const FGameplayAttributeData& MaxAttribute,
@@ -66,6 +76,10 @@ protected:
 	virtual void OnRep_MaxSan();
 
 	UFUNCTION()
-	virtual void OnRep_Attack();
+		virtual void OnRep_AttackPower();
+
+	UFUNCTION()
+		virtual void OnRep_DefensePower();
+
 
 };

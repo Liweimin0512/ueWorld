@@ -7,12 +7,14 @@
 #include "GameplayEffect.h"
 #include "GameplayEffectExtension.h"
 
-UCoreAttributeSet::UCoreAttributeSet():
-	Health(1.f),
-	MaxHealth(1.f),
-	San(1.f),
-	MaxSan(1.f),
-	Attack(1.f)
+UCoreAttributeSet::UCoreAttributeSet()
+	:Health(1.f)
+	,MaxHealth(1.f)
+	,San(1.f)
+	,MaxSan(1.f)
+	,AttackPower(1.f)
+	,DefensePower(1.0f)
+	,Damage(0.0f)
 {
 }
 
@@ -25,7 +27,8 @@ void UCoreAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(UCoreAttributeSet, MaxHealth);
 	DOREPLIFETIME(UCoreAttributeSet, San);
 	DOREPLIFETIME(UCoreAttributeSet, MaxSan);
-	DOREPLIFETIME(UCoreAttributeSet, Attack);
+	DOREPLIFETIME(UCoreAttributeSet, AttackPower);
+	DOREPLIFETIME(UCoreAttributeSet, DefensePower);
 
 }
 
@@ -45,9 +48,16 @@ void UCoreAttributeSet::OnRep_MaxSan() {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UCoreAttributeSet, MaxSan);
 }
 
-void UCoreAttributeSet::OnRep_Attack() {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UCoreAttributeSet, Attack);
+void UCoreAttributeSet::OnRep_AttackPower()
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UCoreAttributeSet, AttackPower);
 }
+
+void UCoreAttributeSet::OnRep_DefensePower()
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UCoreAttributeSet, DefensePower);
+}
+
 
 void UCoreAttributeSet::AdjustAttributeFormMaxChange(FGameplayAttributeData& AffectedAttribute, \
 	const FGameplayAttributeData& MaxAttribute, float NewMaxValue, 

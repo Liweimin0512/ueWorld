@@ -69,7 +69,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		virtual float GetMaxSan() const;
 	UFUNCTION(BlueprintCallable)
-		virtual float GetAttack() const;
+		virtual float GetAttackPower() const;
 
 #pragma endregion Attribut
 
