@@ -147,6 +147,18 @@ public:
 #pragma region AttributeChange
 
 	/**
+	 * Called when character takes damage, which may have killed them
+	 *
+	 * @param DamageAmount Amount of damage that was done, not clamped based on current health
+	 * @param HitInfo The hit info that generated this damage
+	 * @param DamageTags The gameplay tags of the event that did the damage
+	 * @param InstigatorCharacter The character that initiated this damage
+	 * @param DamageCauser The actual actor that did the damage, might be a weapon or projectile
+	 */
+	UFUNCTION(BlueprintImplementableEvent)
+		void OnDamaged(float DamageAmount, const FHitResult& HitInfo, const struct FGameplayTagContainer& DamageTags, AunWorldCharacter* InstigatorCharacter, AActor* DamageCauser);
+
+	/**
 	 * Called when health is changed, either from healing or from being damaged
 	 * For damage this is called in addition to OnDamaged/OnKilled
 	 *
@@ -155,6 +167,8 @@ public:
 	 */
 	UFUNCTION(BlueprintImplementableEvent)
 		void OnHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
+
+
 
 #pragma endregion AttributeChange
 	
@@ -181,6 +195,8 @@ public:
 	void FillSlottedAbilitySpecs(TMap<FItemSlot, FGameplayAbilitySpec>& SlottedAbilitySpecs);
 
 	// Called from CoreAttributeSet, these call BP events above
+	virtual void HandleDamage(float DamageAmount,const FHitResult& HitInfo,const struct FGameplayTagContainer& DamageTags,
+		AunWorldCharacter* InstigatorCharacter, AActor* DamageCauser);
 	virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
 
 protected:

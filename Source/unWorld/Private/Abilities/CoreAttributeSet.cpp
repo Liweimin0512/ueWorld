@@ -15,6 +15,8 @@ UCoreAttributeSet::UCoreAttributeSet()
 	,AttackPower(1.f)
 	,DefensePower(1.0f)
 	,Damage(0.0f)
+	,CurrentExp(0.0f)
+	,MaxExp(0.0f)
 {
 }
 
@@ -29,7 +31,8 @@ void UCoreAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(UCoreAttributeSet, MaxSan);
 	DOREPLIFETIME(UCoreAttributeSet, AttackPower);
 	DOREPLIFETIME(UCoreAttributeSet, DefensePower);
-
+	DOREPLIFETIME(UCoreAttributeSet, CurrentExp);
+	DOREPLIFETIME(UCoreAttributeSet, MaxExp);
 }
 
 void UCoreAttributeSet::OnRep_Health() {
@@ -58,6 +61,16 @@ void UCoreAttributeSet::OnRep_DefensePower()
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UCoreAttributeSet, DefensePower);
 }
 
+void UCoreAttributeSet::OnRep_CurrentExp()
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UCoreAttributeSet, CurrentExp);
+
+}
+
+void UCoreAttributeSet::OnRep_MaxExp() {
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UCoreAttributeSet, MaxExp);
+
+}
 
 void UCoreAttributeSet::AdjustAttributeFormMaxChange(FGameplayAttributeData& AffectedAttribute, \
 	const FGameplayAttributeData& MaxAttribute, float NewMaxValue, 
@@ -90,6 +103,8 @@ void UCoreAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 {
 	Super::PostGameplayEffectExecute(Data);
 
+	FGameplayEffectContextHandle Context = Data.EffectSpec.GetContext();
+	UAbilitySystemComponent* Source = Context.GetOriginalInstigatorAbilitySystemComponent();
 	const FGameplayTagContainer& SourceTags = *Data.EffectSpec.CapturedSourceTags.GetAggregatedTags();
 
 	float DeltaValue = 0;
@@ -99,13 +114,82 @@ void UCoreAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 		DeltaValue = Data.EvaluatedData.Magnitude;
 	}
 
+	// Get the Target actor, which should be our owner
+	AActor* TargetActor = nullptr;
+	AController* TargetController = nullptr;
 	AunWorldCharacter* TargetCharacter = nullptr;
 	if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
 	{
-		TargetCharacter = Cast<AunWorldCharacter>(Data.Target.AbilityActorInfo->AvatarActor.Get());
+		TargetActor = Data.Target.AbilityActorInfo->AvatarActor.Get();
+		TargetController = Data.Target.AbilityActorInfo->PlayerController.Get();
+		TargetCharacter = Cast<AunWorldCharacter>(TargetActor);
 	}
 
-	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
+	{
+		// Get the Source actor
+		AActor* SourceActor = nullptr;
+		AController* SourceController = nullptr;
+		AunWorldCharacter* SourceCharacter = nullptr;
+
+		if (Source && Source->AbilityActorInfo.IsValid() && Source->AbilityActorInfo->AvatarActor.IsValid())
+		{
+			SourceActor = Source->AbilityActorInfo->AvatarActor.Get();
+			SourceController = Source->AbilityActorInfo->PlayerController.Get();
+			if (SourceController == nullptr && SourceActor != nullptr)
+			{
+				if (APawn* Pawn = Cast<APawn>(SourceActor))
+				{
+					SourceController = Pawn->GetController();
+				}
+			}
+
+			// use the controller to find the source pawn
+			if (SourceController)
+			{
+				SourceCharacter = Cast<AunWorldCharacter>(SourceController->GetPawn());
+			}
+			else
+			{
+				SourceCharacter = Cast<AunWorldCharacter>(SourceActor);
+			}
+
+			// set the causer actor based on context if it's set
+			if (Context.GetEffectCauser())
+			{
+				SourceActor = Context.GetEffectCauser();
+			}
+		}
+
+		//Try to extract a hit result
+		FHitResult HitResult;
+		if (Context.GetHitResult())
+		{
+			HitResult = *Context.GetHitResult();
+		}
+
+		// Store a local copy of the amount of damage done and clear the damage attribute
+		const float LocalDamageDone = GetDamage();
+		SetDamage(0.f);
+
+		if (LocalDamageDone > 0)
+		{
+			// Apply the health change and then clamp it
+			const float OldHealth = GetHealth();
+			SetHealth(FMath::Clamp(OldHealth - LocalDamageDone, 0.0f, GetMaxHealth()));
+
+			if (TargetCharacter)
+			{
+				// This is proper damage
+				TargetCharacter->HandleDamage(LocalDamageDone, HitResult, SourceTags, SourceCharacter, SourceActor);
+
+				// Call for all health changes
+				TargetCharacter->HandleHealthChanged(-LocalDamageDone, SourceTags);
+			}
+		}
+
+
+	}else if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(),0.f,GetMaxHealth()));
 
@@ -113,5 +197,8 @@ void UCoreAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 
 		//TargetCharacter->HandleHealthChanged(DeltaValue,SourceTags);
 		TargetCharacter->HandleHealthChanged(DeltaValue, SourceTags);
+	}else if (Data.EvaluatedData.Attribute == GetCurrentExpAttribute())
+	{
+		SetCurrentExp(FMath::Clamp(GetCurrentExp(),0.f,GetMaxExp()));
 	}
 }

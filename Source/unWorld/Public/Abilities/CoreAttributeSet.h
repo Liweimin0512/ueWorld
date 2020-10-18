@@ -59,6 +59,14 @@ public:
 	FGameplayAttributeData Damage;
 	ATTRIBUTE_ACCESSORS(UCoreAttributeSet, Damage)
 
+		UPROPERTY(BlueprintReadOnly, Category = "Exp", ReplicatedUsing = OnRep_CurrentExp)
+		FGameplayAttributeData CurrentExp;
+	ATTRIBUTE_ACCESSORS(UCoreAttributeSet, CurrentExp)
+
+		UPROPERTY(BlueprintReadOnly, Category = "Exp", ReplicatedUsing = OnRep_MaxExp)
+		FGameplayAttributeData MaxExp;
+	ATTRIBUTE_ACCESSORS(UCoreAttributeSet, MaxExp)
+
 protected:
 	void AdjustAttributeFormMaxChange(FGameplayAttributeData& AffectedAttribute, const FGameplayAttributeData& MaxAttribute,
 		float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty);
@@ -81,5 +89,9 @@ protected:
 	UFUNCTION()
 		virtual void OnRep_DefensePower();
 
+	UFUNCTION()
+		virtual void OnRep_CurrentExp();
 
+	UFUNCTION()
+		virtual void OnRep_MaxExp();
 };

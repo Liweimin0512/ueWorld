@@ -155,6 +155,12 @@ void AunWorldCharacter::AddStartupGameplayAbilities()
 	}
 }
 
+void AunWorldCharacter::HandleDamage(float DamageAmount, const FHitResult& HitInfo, const FGameplayTagContainer& DamageTags, 
+	AunWorldCharacter* InstigatorCharacter, AActor* DamageCauser)
+{
+	OnDamaged(DamageAmount,HitInfo,DamageTags,InstigatorCharacter,DamageCauser);
+}
+
 void AunWorldCharacter::HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags)
 {
 	if (bAbilitiesInitialized)
