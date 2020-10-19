@@ -44,6 +44,12 @@ bool UInventorySystemComponent::AddItem(FInventoryItem NewItem, int32 NewAmount,
 	int32 foundIndex;
 	int32 Rest;
 
+	if (ItemData->bAutoUse)
+	{
+		// 道具自动使用
+		UseItem(ItemData, NewAmount);
+	}
+
 	// Stacked = 0 表示不能堆叠
 	if (ItemData->Stacked != 0 )
 	{
@@ -107,7 +113,7 @@ bool UInventorySystemComponent::AddItem(FInventoryItem NewItem, int32 NewAmount,
 	}
 }
 
-bool UInventorySystemComponent::RmoveItem(int32 ItemIndex, int32 ItemAmount)
+bool UInventorySystemComponent::RmoveItemByIndex(int32 ItemIndex, int32 ItemAmount)
 {
 	bool HasFoundItem;
 	UItemDataAsset* FoundItemData;
@@ -183,6 +189,40 @@ bool UInventorySystemComponent::AddItemByName(FString ItemName, int32 ItemAmount
 		return AddItem(FInventoryItem(ItemData,ItemAmount), ItemAmount, Rset);
 	}
 
+	return false;
+}
+
+bool UInventorySystemComponent::RemoveItem(UItemDataAsset* itemData, int32 ItemAmount)
+{
+	if (ItemAmount < GetInventoryItemCount(itemData))
+	{
+		return false;
+	} 
+	
+	for (int32 i=0;i<InventoryData.Num();i++)
+	{
+		if (InventoryData[i].ItemAsset == itemData)
+		{
+			if (InventoryData[i].ItemAmount > ItemAmount)
+			{
+				int32 NewAmount = InventoryData[i].ItemAmount - ItemAmount;
+				SetInventoryItem(i, FInventoryItem(itemData, NewAmount));
+				return true;
+			}
+			else {
+				int32 NewAmount = ItemAmount - InventoryData[i].ItemAmount;
+				SetInventoryItem(i,FInventoryItem(nullptr,0));
+				RemoveItem(itemData, NewAmount);
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool UInventorySystemComponent::UseItem(UItemDataAsset* itemData, int32 ItemAmount)
+{
+	NotifyItemUsed(itemData, ItemAmount);
 	return false;
 }
 
@@ -293,7 +333,7 @@ void UInventorySystemComponent::GetItemByIndex(int32 index, bool& bEmpty, UItemD
 	}
 }
 
-int32 UInventorySystemComponent::GetInventoryItemCount(int32 index) const
+int32 UInventorySystemComponent::GetInventoryItemCountByIndex(int32 index) const
 {
 	if (InventoryData.IsValidIndex(index))
 	{
@@ -304,6 +344,19 @@ int32 UInventorySystemComponent::GetInventoryItemCount(int32 index) const
 	}
 
 	return int32();
+}
+
+int32 UInventorySystemComponent::GetInventoryItemCount(UItemDataAsset* ItemData) const
+{
+	int32 FoundAmount = 0;
+	for (int32 i=0;i < InventoryData.Num();i++)
+	{
+		if (InventoryData[i].ItemAsset == ItemData)
+		{
+			FoundAmount += InventoryData[i].ItemAmount;
+		}
+	}
+	return FoundAmount;
 }
 
 bool UInventorySystemComponent::SetInventoryItem(int32 ItemIndex, FInventoryItem Item)
@@ -391,4 +444,10 @@ void UInventorySystemComponent::NotifyInventoryLoaded()
 	// Notify native before blueprint
 	OnInventoryLoadedNative.Broadcast();
 	OnInventoryLoaded.Broadcast();
+}
+
+void UInventorySystemComponent::NotifyItemUsed(UItemDataAsset* ItemData, int32 ItemAmount)
+{
+	OnItemUsedNative.Broadcast(ItemData,ItemAmount);
+	OnItemUsed.Broadcast(ItemData,ItemAmount);
 }

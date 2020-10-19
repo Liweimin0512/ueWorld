@@ -47,6 +47,10 @@ public:
 	/** Native version above, called before BP delegate */
 	FOnInventoryLoadedNative OnInventoryLoadedNative;
 
+	UPROPERTY(BlueprintAssignable, Category = Inventory)
+	FOnItemUsed OnItemUsed;
+	FOnItemUsedNative OnItemUsedNative;
+
 	/** Called after the inventory was changed and we notified all delegates */
 	UFUNCTION(BlueprintImplementableEvent, Category = Inventory)
 	void InventoryItemChanged(bool bAdded, UItemDataAsset* Item);
@@ -61,7 +65,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 		void GetItemByIndex(int32 index, bool& bEmpty, UItemDataAsset*& item, int32& Amount) const;
 	UFUNCTION(BlueprintCallable, Category = Inventory)
-		int32 GetInventoryItemCount(int32 index) const;
+		int32 GetInventoryItemCountByIndex(int32 index) const;
+
+	UFUNCTION(BlueprintCallable, Category = Inventory)
+		int32 GetInventoryItemCount(UItemDataAsset* ItemData) const;
 
 	/** Manually save the inventory, this is called from add/remove functions automatically */
 	UFUNCTION(BlueprintCallable, Category = Inventory)
@@ -77,13 +84,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 		bool AddItem(FInventoryItem NewItem,int32 ItemAmount,int32& Reset);
 	UFUNCTION(BlueprintCallable, Category = Inventory)
-		bool RmoveItem(int32 ItemIndex, int32 ItemAmount);
+		bool RmoveItemByIndex(int32 ItemIndex, int32 ItemAmount);
 
 	UFUNCTION(BlueprintCallable,Category = Inventory)
 		bool SearchFreeStack(FInventoryItem Item,int32& Index);
 
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 		bool AddItemByName(FString ItemName,int32 ItemAmount);
+
+	UFUNCTION(BlueprintCallable, Category = Inventory)
+		bool RemoveItem(UItemDataAsset* itemData, int32 ItemAmount);
+	
+	UFUNCTION(BlueprintCallable, Category = Inventory)
+		bool UseItem(UItemDataAsset* itemData, int32 ItemAmount);
 
 	UFUNCTION(BlueprintCallable, Category = Slot)
 		bool EquipItemBySlot(FItemSlot ItemSlot, int32 ItemIndex);
@@ -124,4 +137,5 @@ protected:
 	void NotifyInventoryItemChanged(bool bAdded, UItemDataAsset* Item);
 	void NotifySlottedItemChanged(FItemSlot ItemSlot, UItemDataAsset* Item);
 	void NotifyInventoryLoaded();
+	void NotifyItemUsed(UItemDataAsset* ItemData,int32 ItemAmount);
 };

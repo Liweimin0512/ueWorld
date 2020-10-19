@@ -143,6 +143,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory)
 		TMap<FItemSlot, FGameplayAbilitySpecHandle> SlottedAbilities;
 
+	UFUNCTION(BlueprintCallable, Category = Inventory)
+		void OnItemUsed(UItemDataAsset* ItemData,int32 ItemAmount);
 
 #pragma region AttributeChange
 
@@ -203,6 +205,7 @@ protected:
 	/** Delegate handles */
 	FDelegateHandle InventoryUpdateHandle;
 	FDelegateHandle InventoryLoadedHandle;
+	FDelegateHandle InventoryItemUsedHandle;
 
 	/** Called when slotted items change, bound to delegate on interface */
 	void OnItemSlotChanged(FItemSlot ItemSlot, UItemDataAsset* Item);
@@ -210,6 +213,8 @@ protected:
 
 	/** Remove slotted gameplay abilities, if force is false it only removes invalid ones */
 	void RemoveSlottedGameplayAbilities(bool bRemoveAll);
+
+	
 
 	// Friended to allow access to handle functions above
 	friend UCoreAttributeSet;

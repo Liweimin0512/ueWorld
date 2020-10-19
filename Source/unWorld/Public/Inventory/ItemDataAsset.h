@@ -50,6 +50,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
 		bool CanDisplay = true;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
+		bool bAutoUse = false;
+
     /** Maximum number of instances that can be in inventory at once, <= 0 means infinite */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Max)
     int32 MaxCount;

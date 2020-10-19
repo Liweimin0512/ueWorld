@@ -10,6 +10,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Inventory/ItemDataAsset.h"
 #include "Inventory/InventorySystemComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AunWorldCharacter
@@ -67,6 +68,7 @@ void AunWorldCharacter::PossessedBy(AController* NewController)
 	if (InventoryComponent)
 	{
 		InventoryUpdateHandle = InventoryComponent->OnSlottedItemChangedNative.AddUObject(this, &AunWorldCharacter::OnItemSlotChanged);
+		InventoryItemUsedHandle = InventoryComponent->OnItemUsedNative.AddUObject(this, &AunWorldCharacter::OnItemUsed);
 	}
 
 	if (AbilitySystemComponent)
@@ -118,6 +120,25 @@ float AunWorldCharacter::GetMaxSan() const
 float AunWorldCharacter::GetAttackPower() const
 {
 	return AttributeSet->GetAttackPower();
+}
+
+void AunWorldCharacter::OnItemUsed(UItemDataAsset* ItemData, int32 ItemAmount)
+{
+	FString AbilityName = ItemData->AbilityName;
+	FString AbilityAssetPath = FString::Printf(TEXT("Blueprint'/Game/unWorld/Abilities/%s.%s_C'")
+		, *AbilityName, *AbilityName);
+	TSubclassOf<UGameplayAbilityBase> GrantedAbility = LoadClass<UGameplayAbilityBase>(NULL, *AbilityAssetPath);
+	if (!GrantedAbility)
+	{
+		UE_LOG(LogUnWorld, Warning, TEXT("Can not Found Ability On Path: %s"), *GrantedAbility->GetName());
+		return;
+	}
+
+	FGameplayAbilitySpecHandle SpecHandle = AbilitySystemComponent
+		->GiveAbility(FGameplayAbilitySpec(GrantedAbility, ItemAmount, INDEX_NONE, this));
+	AbilitySystemComponent->TryActivateAbility(SpecHandle,true);
+	
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, FGameplayTag(), FGameplayEventData());
 }
 
 void AunWorldCharacter::AddStartupGameplayAbilities()
