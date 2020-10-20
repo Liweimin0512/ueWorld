@@ -10,7 +10,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable, BlueprintType, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class UNWORLD_API URPGAbilitySystemComponent : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
@@ -18,6 +18,9 @@ class UNWORLD_API URPGAbilitySystemComponent : public UAbilitySystemComponent
 public:
 	// Constructors and overrides
 	URPGAbilitySystemComponent();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Inventory)
+		FString AbilityClassPath;
 
 	/** Returns a list of currently active ability instances that match the tags */
 	void GetActiveAbilitiesWithTags(const FGameplayTagContainer& GameplayTagContainer, TArray<UGameplayAbilityBase*>& ActiveAbilities);

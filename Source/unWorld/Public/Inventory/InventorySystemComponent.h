@@ -21,6 +21,9 @@ public:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = Inventory)
+	FString InventoryItemPath;
+
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 	const TArray<FInventoryItem>& GetInventoryData() const;
 	UFUNCTION(BlueprintCallable, Category = Inventory)
@@ -59,7 +62,6 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = Slot)
 	void SlottedItemChanged(FItemSlot ItemSlot, UItemDataAsset* Item);
 
-
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 		bool IsInventoryEmpty(int32 SlotIndex) const;
 	UFUNCTION(BlueprintCallable, Category = Inventory)
@@ -87,7 +89,7 @@ public:
 		bool RmoveItemByIndex(int32 ItemIndex, int32 ItemAmount);
 
 	UFUNCTION(BlueprintCallable,Category = Inventory)
-		bool SearchFreeStack(FInventoryItem Item,int32& Index);
+		bool SearchFreeStack(UItemDataAsset* Item,int32& Index);
 
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 		bool AddItemByName(FString ItemName,int32 ItemAmount);

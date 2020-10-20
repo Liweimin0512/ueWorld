@@ -44,30 +44,23 @@ bool UInventorySystemComponent::AddItem(FInventoryItem NewItem, int32 NewAmount,
 	int32 foundIndex;
 	int32 Rest;
 
-	if (ItemData->bAutoUse)
+	if (ItemData->Stacked != 1 )
 	{
-		// 道具自动使用
-		UseItem(ItemData, NewAmount);
-	}
-
-	// Stacked = 0 表示不能堆叠
-	if (ItemData->Stacked != 0 )
-	{
-		if (SearchFreeStack(NewItem,foundIndex))
+		if (SearchFreeStack(ItemData,foundIndex))
 		{
 			// 如果当前还有富裕的堆叠空间,则计算总数是否超过堆叠上限
 			int32 totalAmount = InventoryData[foundIndex].ItemAmount + NewAmount;
 			if ( totalAmount > ItemData->Stacked )
 			{
-				InventoryData[foundIndex] = FInventoryItem(ItemData, ItemData->Stacked);
+				SetInventoryItem(foundIndex, FInventoryItem(ItemData, ItemData->Stacked));
 				AddItem(NewItem, totalAmount - ItemData->Stacked, Rest);
-				NotifyInventoryItemChanged(true,ItemData);
+				//NotifyInventoryItemChanged(true,ItemData);
 				return true;
 			}
 			else
 			{
-				InventoryData[foundIndex] = FInventoryItem(ItemData, totalAmount);
-				NotifyInventoryItemChanged(true, ItemData);
+				SetInventoryItem(foundIndex, FInventoryItem(ItemData, totalAmount));
+				//NotifyInventoryItemChanged(true, ItemData);
 				return true;
 			}
 		}
@@ -78,16 +71,15 @@ bool UInventorySystemComponent::AddItem(FInventoryItem NewItem, int32 NewAmount,
 				if (NewAmount > ItemData->Stacked)
 				{
 					//如果一次添加的数量过多，则进行递归操作
-					InventoryData[foundIndex] = FInventoryItem(ItemData, ItemData->Stacked);
-					
+					SetInventoryItem(foundIndex, FInventoryItem(ItemData, ItemData->Stacked));
 					AddItem(NewItem, NewAmount - ItemData->Stacked, Rest);
-					NotifyInventoryItemChanged(true, ItemData);
+					//NotifyInventoryItemChanged(true, ItemData);
 					return true;
 				}
 				else
 				{
-					InventoryData[foundIndex] = FInventoryItem(ItemData, NewAmount);
-					NotifyInventoryItemChanged(true, ItemData);
+					SetInventoryItem(foundIndex, FInventoryItem(ItemData, NewAmount));
+					//NotifyInventoryItemChanged(true, ItemData);
 					return true;
 				}
 			}
@@ -99,13 +91,14 @@ bool UInventorySystemComponent::AddItem(FInventoryItem NewItem, int32 NewAmount,
 	{
 		if (SearchEmptyInventorySlot(foundIndex))
 		{
-			InventoryData[foundIndex] = FInventoryItem(ItemData, 1);
+			//InventoryData[foundIndex] = FInventoryItem(ItemData, 1);
+			SetInventoryItem(foundIndex, FInventoryItem(ItemData, 1));
 
 			if (NewAmount > 1)
 			{
 				AddItem(NewItem, NewAmount -1, Rest);
 			}
-			NotifyInventoryItemChanged(true, ItemData);
+			//NotifyInventoryItemChanged(true, ItemData);
 			return true;
 		}
 		// 找不到空槽就返回失败
@@ -145,14 +138,19 @@ bool UInventorySystemComponent::RmoveItemByIndex(int32 ItemIndex, int32 ItemAmou
 }
 
 // 搜索还有富裕的堆叠空间
-bool UInventorySystemComponent::SearchFreeStack(FInventoryItem Item, int32& Index)
+bool UInventorySystemComponent::SearchFreeStack(UItemDataAsset* Item, int32& Index)
 {
-	UItemDataAsset* ItemData = Item.ItemAsset;
-	for (int i = 0; i < InventoryData.Num(); i++)
+	for (int32 i = 0; i < InventoryData.Num(); i++)
 	{
 		if (!IsInventoryEmpty(i))
 		{
-			if (InventoryData[i].ItemAsset == ItemData && InventoryData[i].ItemAmount < ItemData->Stacked)
+			// 堆叠上限为0，表示不设上限
+			//if (InventoryData[i].ItemAsset == Item && Item->Stacked == 0)
+			//{
+			//	Index = i;
+			//	return true;
+			//}
+			if (InventoryData[i].ItemAsset == Item && InventoryData[i].ItemAmount < Item->Stacked)
 			{
 				Index = i;
 				return true;
@@ -166,7 +164,7 @@ bool UInventorySystemComponent::SearchFreeStack(FInventoryItem Item, int32& Inde
 // 搜索空的背包格
 bool UInventorySystemComponent::SearchEmptyInventorySlot(int32& SlotIndex)
 {
-	for (int i = 0; i < InventoryData.Num(); i++)
+	for (int32 i = 0; i < InventoryData.Num(); i++)
 	{
 		if (IsInventoryEmpty(i))
 		{
@@ -365,6 +363,14 @@ bool UInventorySystemComponent::SetInventoryItem(int32 ItemIndex, FInventoryItem
 	if (Item.IsValid())
 	{
 		InventoryData[ItemIndex] = Item;
+
+		if (Item.ItemAsset->bAutoUse)
+		{
+			// 道具自动使用
+			UseItem(Item.ItemAsset, Item.ItemAmount);
+			return true;
+		}
+
 		NotifyInventoryItemChanged(false,Item.ItemAsset);
 		return true;
 	}

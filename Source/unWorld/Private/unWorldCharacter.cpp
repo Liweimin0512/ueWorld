@@ -11,6 +11,7 @@
 #include "Inventory/ItemDataAsset.h"
 #include "Inventory/InventorySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Abilities/AbilityEventData.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AunWorldCharacter
@@ -136,9 +137,18 @@ void AunWorldCharacter::OnItemUsed(UItemDataAsset* ItemData, int32 ItemAmount)
 
 	FGameplayAbilitySpecHandle SpecHandle = AbilitySystemComponent
 		->GiveAbility(FGameplayAbilitySpec(GrantedAbility, ItemAmount, INDEX_NONE, this));
-	AbilitySystemComponent->TryActivateAbility(SpecHandle,true);
+
+	FGameplayAbilityActorInfo ActorInfo = FGameplayAbilityActorInfo();
+
+	auto UseItemEventData = NewObject<UAbilityEventData>();
+	UseItemEventData->ItemData = FInventoryItem(ItemData,ItemAmount);
+
+	FGameplayEventData EventData = FGameplayEventData();
+	EventData.OptionalObject = UseItemEventData;
+
+	AbilitySystemComponent->TriggerAbilityFromGameplayEvent(SpecHandle, &ActorInfo, FGameplayTag(), &EventData, *AbilitySystemComponent);
 	
-	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, FGameplayTag(), FGameplayEventData());
+	//UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, FGameplayTag(), FGameplayEventData());
 }
 
 void AunWorldCharacter::AddStartupGameplayAbilities()
