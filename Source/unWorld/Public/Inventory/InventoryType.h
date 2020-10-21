@@ -148,6 +148,25 @@ struct UNWORLD_API FInventoryItem
 	}
 };
 
+// 背包信息
+struct UMWORLD_API FInventoryInfo{
+	GENERATED_BODY()
+
+	FInventoryInfo()
+		:InventoryName("")
+		,bShow(true)
+	{}
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Item)
+	FString InventoryName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Item)
+	TArray<int32>() ItemTypes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Item)
+	bool bShow;
+}
+
 
 /** Delegate called when an inventory item changes */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnInventoryItemChanged, bool, bAdded, UItemDataAsset*, Item);
