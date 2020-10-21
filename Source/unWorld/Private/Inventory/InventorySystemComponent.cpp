@@ -44,12 +44,31 @@ bool UInventorySystemComponent::AddItem(FInventoryItem NewItem, int32 NewAmount,
 	int32 foundIndex;
 	int32 Rest;
 
-	if (ItemData->Stacked != 1 )
+	if (ItemData->Stacked == 0)
+	{
+		for (int32 i = 0; i < InventoryData.Num(); i++)
+		{
+			if (InventoryData[i].ItemAsset == ItemData)
+			{
+				// 堆叠上限为0，表示不设上限
+				SetInventoryItem(i, FInventoryItem(ItemData, InventoryData[i].ItemAmount + NewAmount));
+				return true;
+			}
+		}
+		if (SearchEmptyInventorySlot(foundIndex))
+		{
+			SetInventoryItem(foundIndex, FInventoryItem(ItemData, NewAmount));
+			return true;
+		}
+		return false;
+	}
+	else if (ItemData->Stacked != 1 )
 	{
 		if (SearchFreeStack(ItemData,foundIndex))
 		{
 			// 如果当前还有富裕的堆叠空间,则计算总数是否超过堆叠上限
 			int32 totalAmount = InventoryData[foundIndex].ItemAmount + NewAmount;
+
 			if ( totalAmount > ItemData->Stacked )
 			{
 				SetInventoryItem(foundIndex, FInventoryItem(ItemData, ItemData->Stacked));
@@ -68,6 +87,7 @@ bool UInventorySystemComponent::AddItem(FInventoryItem NewItem, int32 NewAmount,
 		{
 			if (SearchEmptyInventorySlot(foundIndex))
 			{
+
 				if (NewAmount > ItemData->Stacked)
 				{
 					//如果一次添加的数量过多，则进行递归操作
@@ -142,7 +162,7 @@ bool UInventorySystemComponent::SearchFreeStack(UItemDataAsset* Item, int32& Ind
 {
 	for (int32 i = 0; i < InventoryData.Num(); i++)
 	{
-		if (!IsInventoryEmpty(i))
+		if (!IsInventoryEmpty(i) && InventoryData[i].ItemAsset == Item)
 		{
 			// 堆叠上限为0，表示不设上限
 			//if (InventoryData[i].ItemAsset == Item && Item->Stacked == 0)
@@ -150,7 +170,7 @@ bool UInventorySystemComponent::SearchFreeStack(UItemDataAsset* Item, int32& Ind
 			//	Index = i;
 			//	return true;
 			//}
-			if (InventoryData[i].ItemAsset == Item && InventoryData[i].ItemAmount < Item->Stacked)
+			if (InventoryData[i].ItemAmount < Item->Stacked)
 			{
 				Index = i;
 				return true;
