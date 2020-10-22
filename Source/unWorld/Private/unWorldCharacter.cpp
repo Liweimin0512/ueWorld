@@ -75,7 +75,7 @@ void AunWorldCharacter::PossessedBy(AController* NewController)
 	if (AbilitySystemComponent)
 	{
 		AbilitySystemComponent->InitAbilityActorInfo(this,this);
-		// 锟斤拷锟斤拷锟斤拷锟杰筹拷始锟斤拷
+		// 默认技能初始化
 		AddStartupGameplayAbilities();
 	}
 }
@@ -145,10 +145,18 @@ void AunWorldCharacter::OnItemUsed(UItemDataAsset* ItemData, int32 ItemAmount)
 
 	FGameplayEventData EventData = FGameplayEventData();
 	EventData.OptionalObject = UseItemEventData;
+	EventData.Instigator = this;
 
-	AbilitySystemComponent->TriggerAbilityFromGameplayEvent(SpecHandle, &ActorInfo, FGameplayTag(), &EventData, *AbilitySystemComponent);
-	
-	//UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, FGameplayTag(), FGameplayEventData());
+	if (AbilitySystemComponent->TriggerAbilityFromGameplayEvent(SpecHandle, &ActorInfo, 
+			FGameplayTag(), &EventData, *AbilitySystemComponent))
+	{
+		//UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, FGameplayTag(), FGameplayEventData());
+
+	}
+	else
+	{
+		UE_LOG(LogUnWorld, Warning, TEXT("TriggerAbilityFromGameplayEvent is Failure!"));
+	}
 }
 
 void AunWorldCharacter::AddStartupGameplayAbilities()
@@ -202,8 +210,32 @@ void AunWorldCharacter::HandleHealthChanged(float DeltaValue, const struct FGame
 
 void AunWorldCharacter::HandleLevelChanged()
 {
-	// 鍗囩骇鎿嶄綔
+	// 升级
 	SetCharacterLevel(GetCharacterLevel() + 1);
+
+	// 技能初始化
+	for (TSubclassOf<UGameplayAbilityBase>& StartupAbility : GameplayAbilities)
+	{
+		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, CharacterLevel, INDEX_NONE, this));
+	}
+
+	// 效果初始化
+	for (TSubclassOf<UGameplayEffect>& gameplayEffect : PassiveGameplayEffects)
+	{
+		FGameplayEffectContextHandle effectHandle = AbilitySystemComponent->MakeEffectContext();
+		effectHandle.AddSourceObject(this);
+
+		FGameplayEffectSpecHandle newHandle = AbilitySystemComponent->MakeOutgoingSpec(gameplayEffect, CharacterLevel, effectHandle);
+		if (newHandle.IsValid())
+		{
+			FActiveGameplayEffectHandle activeGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*newHandle.Data.Get(), AbilitySystemComponent);
+		}
+	}
+
+	if (bAbilitiesInitialized)
+	{
+		OnLevelChanged(GetCharacterLevel() + 1);
+	}	
 }
 
 void AunWorldCharacter::GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbilityBase*>& ActiveAbilities)

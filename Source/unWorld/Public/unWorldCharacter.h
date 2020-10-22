@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "unWorld.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
 #include "Abilities/RPGAbilitySystemComponent.h"
@@ -45,15 +45,6 @@ public:
 	/** Modifies the character level, this may change abilities. Returns true on success */
 	UFUNCTION(BlueprintCallable, Category = Level)
 		virtual bool SetCharacterLevel(int32 NewLevel);
-
-	UFUNCTION(BlueprintCallable, Category = Level)
-		virtual int32 GetCurrentExp() const;
-	
-	UFUNCTION(BlueprintCallable, Category = Level)
-		virtual int32 GetMaxExp() const;
-
-	UFUNCTION(BlueprintCallable, Category = Level)
-		virtual bool UpgradeLevel();
 
 #pragma endregion
 
@@ -168,9 +159,10 @@ public:
 	 * @param EventTags The gameplay tags of the event that changed mana
 	 */
 	UFUNCTION(BlueprintImplementableEvent)
-		void OnHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
+	void OnHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
 
-
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnLevelChanged(int32 Level);
 
 #pragma endregion AttributeChange
 	

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "unWorld.h"
 #include "AttributeSet.h"
 #include "AbilitySystemComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -14,8 +14,10 @@
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+class AunWorldCharacter;
+
 /**
- * �������Լ�
+ * 核心属性集
  */
 UCLASS()
 class UNWORLD_API UCoreAttributeSet : public UAttributeSet
@@ -103,4 +105,5 @@ protected:
 	UFUNCTION()
 		virtual void OnRep_StdDefensePower();
 
+	void AddExp(float CurrentExp, float MaxExp, AunWorldCharacter* TargetCharacter);
 };

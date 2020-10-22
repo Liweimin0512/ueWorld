@@ -3,9 +3,9 @@
 
 #include "Abilities/CoreAttributeSet.h"
 #include "Abilities/RPGAbilitySystemComponent.h"
-#include "unWorldCharacter.h"
 #include "GameplayEffect.h"
 #include "GameplayEffectExtension.h"
+#include "unWorldCharacter.h"
 
 UCoreAttributeSet::UCoreAttributeSet()
 	:Health(1.f)
@@ -21,7 +21,7 @@ UCoreAttributeSet::UCoreAttributeSet()
 {
 }
 
-// ����ͬ��
+// 属性同步
 void UCoreAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -96,7 +96,7 @@ void UCoreAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, 
 {
 	Super::PreAttributeChange(Attribute,NewValue);
 
-	// ������ֵ�ı�ǰ���ж��Ƿ��ں�����Χ��
+	// 在生命值改变前，判断是否在合理范围内
 	if (Attribute == GetMaxHealthAttribute())
 	{
 		AdjustAttributeFormMaxChange(Health,MaxHealth,NewValue,GetHealthAttribute());
@@ -203,19 +203,25 @@ void UCoreAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 		TargetCharacter->HandleHealthChanged(DeltaValue, SourceTags);
 	}else if (Data.EvaluatedData.Attribute == GetCurrentExpAttribute())
 	{
-		// ��ǰ����ֵ�ı�ʱ���ж��Ƿ�����
-		const float currentExp = GetCurrentExp();
-		
+		// 当前经验值改变时，判断是否升级
+		float currentExp = GetCurrentExp();
+
 		if (!TargetCharacter) return;
 
-		if (GetCurrentExp()> GetMaxExp())
-		{
-			/* code */
-			TargetCharacter->HandleLevelChanged();
-			SetCurrentExp(GetCurrentExp() - GetMaxExp());
-		}else
-		{
-			SetCurrentExp(FMath::Clamp(GetCurrentExp(),0.f,GetMaxExp()));		
-		}
+		AddExp(currentExp, GetMaxExp(), TargetCharacter);
+	}
+}
+
+void UCoreAttributeSet::AddExp(float currentExp, float maxExp, AunWorldCharacter* TargetCharacter)
+{
+	if (currentExp > maxExp)
+	{
+		currentExp = GetCurrentExp() - GetMaxExp();
+		TargetCharacter->HandleLevelChanged();
+		AddExp(currentExp, GetMaxExp(), TargetCharacter);
+	}
+	else
+	{
+		SetCurrentExp(FMath::Clamp(currentExp, 0.f, maxExp));
 	}
 }
