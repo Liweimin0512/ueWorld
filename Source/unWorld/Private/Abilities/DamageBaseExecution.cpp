@@ -58,7 +58,7 @@ void UDamageBaseExecution::Execute_Implementation(const FGameplayEffectCustomExe
 	EvaluationParameters.TargetTags = TargetTags;
 
 	// --------------------------------------
-	//	Damage Done = Damage * AttackPower / DefensePower
+	//	Damage Done = AttackPower * AttackPower / (DefensePower + AttackPower)
 	//	If DefensePower is 0, it is treated as 1.0
 	// --------------------------------------
 
@@ -75,7 +75,8 @@ void UDamageBaseExecution::Execute_Implementation(const FGameplayEffectCustomExe
 	float Damage = 0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().DamageDef, EvaluationParameters, Damage);
 
-	float DamageDone = Damage * AttackPower / DefensePower;
+	float DamageDone = AttackPower * AttackPower / (DefensePower + AttackPower);
+	
 	if (DamageDone > 0.f)
 	{
 		OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(DamageStatics().DamageProperty, EGameplayModOp::Additive, DamageDone));

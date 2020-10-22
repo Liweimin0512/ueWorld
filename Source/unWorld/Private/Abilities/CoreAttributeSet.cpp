@@ -14,13 +14,14 @@ UCoreAttributeSet::UCoreAttributeSet()
 	,MaxSan(1.f)
 	,AttackPower(1.f)
 	,DefensePower(1.0f)
+	,StdDefensePower(1.0f)
 	,Damage(0.0f)
 	,CurrentExp(0.0f)
 	,MaxExp(0.0f)
 {
 }
 
-// ÊôÐÔÍ¬²½
+// ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½
 void UCoreAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -31,6 +32,7 @@ void UCoreAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(UCoreAttributeSet, MaxSan);
 	DOREPLIFETIME(UCoreAttributeSet, AttackPower);
 	DOREPLIFETIME(UCoreAttributeSet, DefensePower);
+	DOREPLIFETIME(UCoreAttributeSet, StdDefensePower);
 	DOREPLIFETIME(UCoreAttributeSet, CurrentExp);
 	DOREPLIFETIME(UCoreAttributeSet, MaxExp);
 }
@@ -64,12 +66,14 @@ void UCoreAttributeSet::OnRep_DefensePower()
 void UCoreAttributeSet::OnRep_CurrentExp()
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UCoreAttributeSet, CurrentExp);
-
 }
 
 void UCoreAttributeSet::OnRep_MaxExp() {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UCoreAttributeSet, MaxExp);
+}
 
+void UCoreAttributeSet::OnRep_StdDefensePower() {
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UCoreAttributeSet, StdDefensePower);
 }
 
 void UCoreAttributeSet::AdjustAttributeFormMaxChange(FGameplayAttributeData& AffectedAttribute, \
@@ -92,7 +96,7 @@ void UCoreAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, 
 {
 	Super::PreAttributeChange(Attribute,NewValue);
 
-	// ÔÚÉúÃüÖµ¸Ä±äÇ°£¬ÅÐ¶ÏÊÇ·ñÔÚºÏÀí·¶Î§ÄÚ
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½Ä±ï¿½Ç°ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½Úºï¿½ï¿½ï¿½ï¿½ï¿½Î§ï¿½ï¿½
 	if (Attribute == GetMaxHealthAttribute())
 	{
 		AdjustAttributeFormMaxChange(Health,MaxHealth,NewValue,GetHealthAttribute());
@@ -199,7 +203,7 @@ void UCoreAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 		TargetCharacter->HandleHealthChanged(DeltaValue, SourceTags);
 	}else if (Data.EvaluatedData.Attribute == GetCurrentExpAttribute())
 	{
-		// µ±Ç°¾­ÑéÖµ¸Ä±äÊ±£¬ÅÐ¶ÏÊÇ·ñÉý¼¶
+		// ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½Öµï¿½Ä±ï¿½Ê±ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½
 		const float currentExp = GetCurrentExp();
 		
 		if (!TargetCharacter) return;

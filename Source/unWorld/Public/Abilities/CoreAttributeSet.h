@@ -15,7 +15,7 @@
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
 /**
- * ºËÐÄÊôÐÔ¼¯
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½
  */
 UCLASS()
 class UNWORLD_API UCoreAttributeSet : public UAttributeSet
@@ -53,6 +53,11 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Damage", ReplicatedUsing = OnRep_DefensePower)
 	FGameplayAttributeData DefensePower;
 	ATTRIBUTE_ACCESSORS(UCoreAttributeSet, DefensePower)
+
+	UPROPERTY(BlueprintReadOnly, Category = "Damage", ReplicatedUsing = OnRep_StdDefensePower)
+	FGameplayAttributeData StdDefensePower;
+	ATTRIBUTE_ACCESSORS(UCoreAttributeSet, StdDefensePower)
+
 
 	/** Damage is a 'temporary' attribute used by the DamageExecution to calculate final damage, which then turns into -Health */
 	UPROPERTY(BlueprintReadOnly, Category = "Mana", meta = (HideFromLevelInfos))
@@ -94,4 +99,8 @@ protected:
 
 	UFUNCTION()
 		virtual void OnRep_MaxExp();
+
+	UFUNCTION()
+		virtual void OnRep_StdDefensePower();
+
 };
