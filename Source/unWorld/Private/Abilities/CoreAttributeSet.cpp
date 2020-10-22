@@ -199,6 +199,19 @@ void UCoreAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 		TargetCharacter->HandleHealthChanged(DeltaValue, SourceTags);
 	}else if (Data.EvaluatedData.Attribute == GetCurrentExpAttribute())
 	{
-		SetCurrentExp(FMath::Clamp(GetCurrentExp(),0.f,GetMaxExp()));
+		// 当前经验值改变时，判断是否升级
+		const float currentExp = GetCurrentExp();
+		
+		if (!TargetCharacter) return;
+
+		if (GetCurrentExp()> GetMaxExp())
+		{
+			/* code */
+			TargetCharacter->HandleLevelChanged();
+			SetCurrentExp(GetCurrentExp() - GetMaxExp());
+		}else
+		{
+			SetCurrentExp(FMath::Clamp(GetCurrentExp(),0.f,GetMaxExp()));		
+		}
 	}
 }

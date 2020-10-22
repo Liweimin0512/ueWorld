@@ -75,7 +75,7 @@ void AunWorldCharacter::PossessedBy(AController* NewController)
 	if (AbilitySystemComponent)
 	{
 		AbilitySystemComponent->InitAbilityActorInfo(this,this);
-		// Æô¶¯¼¼ÄÜ³õÊ¼»¯
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü³ï¿½Ê¼ï¿½ï¿½
 		AddStartupGameplayAbilities();
 	}
 }
@@ -198,6 +198,12 @@ void AunWorldCharacter::HandleHealthChanged(float DeltaValue, const struct FGame
 	{
 		OnHealthChanged(DeltaValue, EventTags);
 	}
+}
+
+void AunWorldCharacter::HandleLevelChanged()
+{
+	// å‡çº§æ“ä½œ
+	SetCharacterLevel(GetCharacterLevel() + 1);
 }
 
 void AunWorldCharacter::GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbilityBase*>& ActiveAbilities)
@@ -351,21 +357,6 @@ bool AunWorldCharacter::SetCharacterLevel(int32 NewLevel)
 
 		return true;
 	}
-	return false;
-}
-
-int32 AunWorldCharacter::GetCurrentExp() const
-{
-	return 1;
-}
-
-int32 AunWorldCharacter::GetMaxExp() const
-{
-	return 1;
-}
-
-bool AunWorldCharacter::UpgradeLevel()
-{
 	return false;
 }
 

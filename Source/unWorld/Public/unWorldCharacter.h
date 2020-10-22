@@ -201,6 +201,8 @@ public:
 		AunWorldCharacter* InstigatorCharacter, AActor* DamageCauser);
 	virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
 
+	virtual void HandleLevelChanged();
+
 protected:
 	/** Delegate handles */
 	FDelegateHandle InventoryUpdateHandle;
