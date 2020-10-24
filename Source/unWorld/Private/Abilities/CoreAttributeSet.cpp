@@ -86,8 +86,8 @@ void UCoreAttributeSet::AdjustAttributeFormMaxChange(FGameplayAttributeData& Aff
 	if (FMath::IsNearlyEqual(CurrentMaxValue,NewMaxValue) && AbilityComponent ) return;
 
 	const float CurrentValue = AffectedAttribute.GetCurrentValue();
-	//float NewDelta = (CurrentMaxValue > 0.f) ? (CurrentValue * NewMaxValue / CurrentMaxValue) : NewMaxValue;
-	float NewDelta = NewMaxValue;
+	float NewDelta = (CurrentMaxValue > 0.f) ? (CurrentValue * NewMaxValue / CurrentMaxValue) : NewMaxValue;
+	//float NewDelta = NewMaxValue;
 
 	AbilityComponent->ApplyModToAttributeUnsafe(AffectedAttributeProperty, EGameplayModOp::Additive, NewDelta);
 }
@@ -193,7 +193,8 @@ void UCoreAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 		}
 
 
-	}else if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	}
+	else if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(),0.f,GetMaxHealth()));
 
@@ -201,7 +202,8 @@ void UCoreAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 
 		//TargetCharacter->HandleHealthChanged(DeltaValue,SourceTags);
 		TargetCharacter->HandleHealthChanged(DeltaValue, SourceTags);
-	}else if (Data.EvaluatedData.Attribute == GetCurrentExpAttribute())
+	}
+	else if (Data.EvaluatedData.Attribute == GetCurrentExpAttribute())
 	{
 		// 当前经验值改变时，判断是否升级
 		float currentExp = GetCurrentExp();

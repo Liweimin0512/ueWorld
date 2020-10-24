@@ -20,3 +20,4 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	FInventoryItem ItemData;
 };
+

@@ -45,7 +45,8 @@ FRPGGameplayEffectContainerSpec UGameplayAbilityBase::MakeEffectContainerSpecFro
 	return ReturnSpec;
 }
 
-FRPGGameplayEffectContainerSpec UGameplayAbilityBase::MakeEffectContainerSpec(FGameplayTag ContainerTag, const FGameplayEventData& EventData, int32 OverrideGameplayLevel)
+FRPGGameplayEffectContainerSpec UGameplayAbilityBase::MakeEffectContainerSpec(FGameplayTag ContainerTag, const FGameplayEventData& EventData, 
+	int32 OverrideGameplayLevel)
 {
 	FRPGGameplayEffectContainer* FoundContainer = EffectContainerMap.Find(ContainerTag);
 
@@ -68,7 +69,8 @@ TArray<FActiveGameplayEffectHandle> UGameplayAbilityBase::ApplyEffectContainerSp
 	return AllEffects;
 }
 
-TArray<FActiveGameplayEffectHandle> UGameplayAbilityBase::ApplyEffectContainer(FGameplayTag ContainerTag, const FGameplayEventData& EventData, int32 OverrideGameplayLevel)
+TArray<FActiveGameplayEffectHandle> UGameplayAbilityBase::ApplyEffectContainer(FGameplayTag ContainerTag, const FGameplayEventData& EventData, 
+	int32 OverrideGameplayLevel)
 {
 	FRPGGameplayEffectContainerSpec Spec = MakeEffectContainerSpec(ContainerTag, EventData, OverrideGameplayLevel);
 	return ApplyEffectContainerSpec(Spec);

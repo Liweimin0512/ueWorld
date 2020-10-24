@@ -64,3 +64,15 @@ public:
 	/** Adds new targets to target data */
 	void AddTargets(const TArray<FHitResult>& HitResults, const TArray<AActor*>& TargetActors);
 };
+
+USTRUCT(BlueprintType)
+struct FAttributeInfo
+{
+	GENERATED_BODY()
+
+public:
+	FAttributeInfo() {}
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = AttributeInfo)
+	FName AttributeName;
+};
