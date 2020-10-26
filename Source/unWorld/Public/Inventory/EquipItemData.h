@@ -29,7 +29,5 @@ public:
 	int32 EquipType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Equip)
-	FName MainAttributeName;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Equip)
-	float MainAttributeValue;
+	TMap<FName, float> AttributeMap;	
 };
