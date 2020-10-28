@@ -40,3 +40,24 @@ URPGAbilitySystemComponent* URPGAbilitySystemComponent::GetAbilitySystemComponen
 {
 	return Cast<URPGAbilitySystemComponent>(UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Actor, LookForComponent));
 }
+
+FActiveGameplayEffectHandle URPGAbilitySystemComponent::ApplyGameplayEffectByEquip(TMap<FGameplayAttribute, float> AttributeMap)
+{
+	
+	UGameplayEffect* GEBounty = NewObject<UGameplayEffect>(GetTransientPackage(), FName(TEXT("Bounty")));
+	GEBounty->DurationPolicy = EGameplayEffectDurationType::Instant;
+
+	int32 Idx = GEBounty->Modifiers.Num();
+	GEBounty->Modifiers.SetNum(Idx + AttributeMap.Num());
+
+	for (TPair<FGameplayAttribute, float> Attribute : AttributeMap)
+	{
+		FGameplayModifierInfo& InfoGold = GEBounty->Modifiers[Idx];
+		InfoGold.ModifierMagnitude = FScalableFloat( Attribute.Value );
+		InfoGold.ModifierOp = EGameplayModOp::Additive;
+		InfoGold.Attribute = Attribute.Key;
+		Idx++;
+	}
+
+	return this->ApplyGameplayEffectToSelf(GEBounty, 1.0f, this->MakeEffectContext());
+}

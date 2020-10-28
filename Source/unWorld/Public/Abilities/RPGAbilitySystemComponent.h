@@ -30,4 +30,7 @@ public:
 
 	/** Version of function in AbilitySystemGlobals that returns correct type */
 	static URPGAbilitySystemComponent* GetAbilitySystemComponentFromActor(const AActor* Actor, bool LookForComponent = false);
+
+	UFUNCTION(BlueprintCallable, Category = Inventory)
+		FActiveGameplayEffectHandle ApplyGameplayEffectByEquip(TMap<FGameplayAttribute,float> AttrubuteMap);
 };
