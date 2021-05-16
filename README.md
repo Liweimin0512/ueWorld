@@ -6,7 +6,13 @@ Developed with Unreal Engine 4
 这个项目将包括一切RPG项目中常见的功能模块
 以及你想看到的内容（欢迎给我留言）
 
-主要模块（目前正在制作）：
+## 开发环境
+
+UE4.26
+[UE4 vectory 插件](http://www.mediafire.com/file/0q10k9k3lumkbsk/VictoryPlugin26.zip/file)
+基于GameplayAbilitySystem插件开发的属性系统
+
+## 主要模块（目前正在制作）：
 
 - [ ] 等级和经验值
 - [ ] minimap 小地图系统（如果需要的话）
